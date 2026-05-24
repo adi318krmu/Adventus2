@@ -19,12 +19,14 @@ const validate = (req, res, next) => {
 
 router.get("/brand", async (_req, res, next) => {
   try {
-    const admin = await Admin.findOne({ profilePhoto: { $ne: "" } })
+    const admin = await Admin.findOne({
+      profilePhoto: { $exists: true, $nin: ["", null] }
+    })
       .select("profilePhoto")
       .sort({ updatedAt: -1 });
 
     res.json({
-      text: "Aditya Singh • Kaizen Sensei",
+      text: "Aditya Singh \u2022 Kaizen Sensei",
       photo: admin?.profilePhoto || ""
     });
   } catch (error) {
