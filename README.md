@@ -248,6 +248,8 @@ VITE_QR_IMAGE_URL=/sbi-upi-qr.jpeg
 5. After Vercel gives you a URL, copy it and update Render `CLIENT_URL` with that Vercel URL.
 6. Redeploy the Render backend once after changing `CLIENT_URL`.
 
+`frontend/vercel.json` is included to fix Vercel refresh errors on React Router pages. Without this rewrite, refreshing `/login`, `/student/dashboard`, `/admin/dashboard`, or other frontend routes can show `404: NOT_FOUND`.
+
 ## MongoDB Atlas Notes
 
 In MongoDB Atlas:
