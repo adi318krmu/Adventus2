@@ -4,7 +4,7 @@ import Student from "../models/Student.js";
 import Payment from "../models/Payment.js";
 import Admin from "../models/Admin.js";
 import { protectAdmin } from "../middleware/auth.js";
-import { upload } from "../middleware/upload.js";
+import { profileUpload } from "../middleware/upload.js";
 import { getFeeForClass, isValidClass } from "../utils.js";
 import { makeTuitionId } from "../idUtils.js";
 
@@ -49,12 +49,12 @@ router.get("/profile", async (req, res) => {
   res.json(req.user);
 });
 
-router.put("/profile", upload.single("profilePhoto"), async (req, res, next) => {
+router.put("/profile", profileUpload.single("profilePhoto"), async (req, res, next) => {
   try {
     const admin = await Admin.findById(req.user._id);
     if (!admin) return res.status(404).json({ message: "Admin not found" });
     if (!admin.tuitionId) admin.tuitionId = makeTuitionId("admin");
-    if (req.file) admin.profilePhoto = `/uploads/${req.file.filename}`;
+    if (req.file) admin.profilePhoto = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
     await admin.save();
     res.json(admin.toSafeObject());
   } catch (error) {

@@ -9,6 +9,8 @@ const storage = multer.diskStorage({
   }
 });
 
+const profileStorage = multer.memoryStorage();
+
 const fileFilter = (_req, file, cb) => {
   const allowed = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
   cb(null, allowed.includes(file.mimetype));
@@ -18,4 +20,13 @@ export const upload = multer({
   storage,
   fileFilter,
   limits: { fileSize: 3 * 1024 * 1024 }
+});
+
+export const profileUpload = multer({
+  storage: profileStorage,
+  fileFilter: (_req, file, cb) => {
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    cb(null, allowed.includes(file.mimetype));
+  },
+  limits: { fileSize: 1.5 * 1024 * 1024 }
 });

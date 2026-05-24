@@ -12,6 +12,7 @@ api.interceptors.request.use((config) => {
 
 export const fileUrl = (path) => {
   if (!path) return "";
+  if (path.startsWith("data:")) return path;
   if (path.startsWith("http")) return path;
   const base = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
   return `${base}${path}`;

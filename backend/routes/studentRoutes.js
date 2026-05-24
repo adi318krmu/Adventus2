@@ -3,7 +3,7 @@ import { body, validationResult } from "express-validator";
 import Student from "../models/Student.js";
 import Payment from "../models/Payment.js";
 import { protectStudent, protectAdmin } from "../middleware/auth.js";
-import { upload } from "../middleware/upload.js";
+import { profileUpload } from "../middleware/upload.js";
 import { getFeeForClass, isValidClass } from "../utils.js";
 import { makeTuitionId } from "../idUtils.js";
 
@@ -22,7 +22,7 @@ router.get("/profile", protectStudent, async (req, res) => {
 router.put(
   "/profile",
   protectStudent,
-  upload.single("profilePhoto"),
+  profileUpload.single("profilePhoto"),
   [
     body("name").optional().trim().notEmpty().withMessage("Name cannot be empty"),
     body("class").optional().trim().custom(isValidClass).withMessage("Class must be from 4 to 10")
@@ -37,7 +37,7 @@ router.put(
         student.feeAmount = getFeeForClass(req.body.class);
       }
       if (!student.tuitionId) student.tuitionId = makeTuitionId("student");
-      if (req.file) student.profilePhoto = `/uploads/${req.file.filename}`;
+      if (req.file) student.profilePhoto = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
       await student.save();
       res.json(student.toSafeObject());
     } catch (error) {

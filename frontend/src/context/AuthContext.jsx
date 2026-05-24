@@ -58,8 +58,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (!token || role !== "student") return;
-    api.get("/student/profile").then(({ data }) => {
+    if (!token || !role) return;
+    const profileUrl = role === "admin" ? "/admin/profile" : "/student/profile";
+    api.get(profileUrl).then(({ data }) => {
       setUser(data);
       sessionStorage.setItem("tms_user", JSON.stringify(data));
     }).catch(() => logout());

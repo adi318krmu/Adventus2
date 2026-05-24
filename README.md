@@ -8,7 +8,7 @@ A full-stack MERN tuition management web app for managing students, monthly fees
 - Backend: Node.js, Express.js
 - Database: MongoDB Atlas with Mongoose
 - Authentication: JWT and bcrypt password hashing
-- Uploads: Multer local uploads
+- Uploads: Multer local uploads for payment screenshots; MongoDB data URLs for profile photos
 - Notifications: React Hot Toast
 - Payment: UPI QR/transaction ID and cash approval workflow
 
@@ -260,9 +260,11 @@ In MongoDB Atlas:
 
 ## Important Deployment Note About Uploads
 
-This project uses local Multer uploads in `backend/uploads`.
+This project uses local Multer uploads in `backend/uploads` for payment screenshots.
 
-On Render free hosting, uploaded files may disappear after redeploys or restarts because the filesystem is not permanent. For production, use Cloudinary or another storage service for profile photos and screenshots.
+Profile photos are stored in MongoDB as data URLs, so they keep showing after Render sleeps, restarts, or redeploys.
+
+On Render free hosting, uploaded payment screenshots may disappear after redeploys or restarts because the filesystem is not permanent. For production, use Cloudinary or another storage service for screenshots.
 
 ## Useful Commands
 
