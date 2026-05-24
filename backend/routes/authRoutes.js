@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { body, validationResult } from "express-validator";
 import Student from "../models/Student.js";
 import Admin from "../models/Admin.js";
-import { getFeeForClass } from "../utils.js";
+import { getFeeForClass, isValidClass } from "../utils.js";
 import { makeTuitionId } from "../idUtils.js";
 
 const router = express.Router();
@@ -22,7 +22,7 @@ router.post(
   [
     body("username").trim().isLength({ min: 3 }).withMessage("Username must be at least 3 characters"),
     body("name").trim().notEmpty().withMessage("Full name is required"),
-    body("class").trim().notEmpty().withMessage("Class is required"),
+    body("class").trim().custom(isValidClass).withMessage("Class must be from 4 to 10"),
     body("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters")
   ],
   validate,

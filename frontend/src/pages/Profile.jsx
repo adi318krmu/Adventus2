@@ -7,7 +7,7 @@ import { classes, feeByClass, formatMoney } from "../utils/fees";
 
 const Profile = () => {
   const { user, setUser } = useAuth();
-  const [form, setForm] = useState({ name: user?.name || "", class: user?.class || "6", profilePhoto: null });
+  const [form, setForm] = useState({ name: user?.name || "", class: user?.class || "4", profilePhoto: null });
   const [loading, setLoading] = useState(false);
 
   const submit = async (event) => {
@@ -20,7 +20,7 @@ const Profile = () => {
       if (form.profilePhoto) payload.append("profilePhoto", form.profilePhoto);
       const { data } = await api.put("/student/profile", payload, { headers: { "Content-Type": "multipart/form-data" } });
       setUser(data);
-      localStorage.setItem("tms_user", JSON.stringify(data));
+      sessionStorage.setItem("tms_user", JSON.stringify(data));
       toast.success("Profile updated");
     } catch (error) {
       toast.error(error.response?.data?.message || "Update failed");

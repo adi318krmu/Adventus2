@@ -34,7 +34,7 @@ const PaymentPage = () => {
       await api.post("/payment", payload, { headers: { "Content-Type": "multipart/form-data" } });
       const profile = await api.get("/student/profile");
       setUser(profile.data);
-      localStorage.setItem("tms_user", JSON.stringify(profile.data));
+      sessionStorage.setItem("tms_user", JSON.stringify(profile.data));
       toast.success(form.paymentMode === "UPI" ? "UPI payment saved as paid" : "Cash payment sent for approval");
       setForm({ paymentMode: "UPI", transactionId: "", paymentNote: "", month: currentMonth(), screenshot: null });
     } catch (error) {

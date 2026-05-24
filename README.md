@@ -18,7 +18,8 @@ A full-stack MERN tuition management web app for managing students, monthly fees
 - Admin login and admin account creation
 - Unique tuition IDs for students and admins
 - Student/admin profile photo upload
-- Auto fee calculation by class
+- Session-based login storage
+- Auto fee calculation for classes 4 to 10
 - Student dashboard with profile, fee amount, fee status, and payment history
 - UPI payment saves instantly as paid after transaction ID submission
 - Cash payment is submitted as pending and needs admin approval
@@ -152,6 +153,20 @@ password: admin123
   - No file upload required.
   - Payment is saved as `Pending`.
   - Admin must accept or reject it.
+
+## Class Fee Table
+
+```text
+Class 4  -> ₹400
+Class 5  -> ₹500
+Class 6  -> ₹600
+Class 7  -> ₹700
+Class 8  -> ₹800
+Class 9  -> ₹900
+Class 10 -> ₹1000
+```
+
+The frontend and backend use the same class list. Admin dashboard stats also sync pending/accepted payment records with the current class fee before calculating total collection.
 
 ## Main API Routes
 

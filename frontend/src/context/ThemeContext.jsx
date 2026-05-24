@@ -3,12 +3,12 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 const ThemeContext = createContext(null);
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(localStorage.getItem("tms_theme") || "dark");
+  const [theme, setTheme] = useState(sessionStorage.getItem("tms_theme") || "dark");
 
   useEffect(() => {
     document.documentElement.classList.toggle("light", theme === "light");
     document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("tms_theme", theme);
+    sessionStorage.setItem("tms_theme", theme);
   }, [theme]);
 
   const value = useMemo(() => ({

@@ -5,7 +5,7 @@ import Payment from "../models/Payment.js";
 import Admin from "../models/Admin.js";
 import { protectAdmin } from "../middleware/auth.js";
 import { upload } from "../middleware/upload.js";
-import { getFeeForClass } from "../utils.js";
+import { getFeeForClass, isValidClass } from "../utils.js";
 import { makeTuitionId } from "../idUtils.js";
 
 const router = express.Router();
@@ -14,6 +14,33 @@ const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ message: errors.array()[0].msg });
   next();
+};
+
+const syncStudentFeeRecords = async (student) => {
+  const latestFee = getFeeForClass(student.class);
+  const shouldSync = student.feeAmount !== latestFee;
+
+  if (!shouldSync) return student;
+
+  student.feeAmount = latestFee;
+  student.paymentHistory.forEach((item) => {
+    if (["Pending", "Accepted"].includes(item.status)) item.amount = latestFee;
+  });
+
+  await Promise.all([
+    student.save(),
+    Payment.updateMany(
+      { studentId: student._id, status: { $in: ["Pending", "Accepted"] } },
+      { $set: { amount: latestFee } }
+    )
+  ]);
+
+  return student;
+};
+
+const syncAllStudentFees = async () => {
+  const students = await Student.find();
+  await Promise.all(students.map((student) => syncStudentFeeRecords(student)));
 };
 
 router.use(protectAdmin);
@@ -37,6 +64,7 @@ router.put("/profile", upload.single("profilePhoto"), async (req, res, next) => 
 
 router.get("/stats", async (_req, res, next) => {
   try {
+    await syncAllStudentFees();
     const [totalStudents, paidStudents, pendingPayments, rejectedPayments, collection] = await Promise.all([
       Student.countDocuments(),
       Student.countDocuments({ feeStatus: "Paid" }),
@@ -79,7 +107,7 @@ router.post(
   [
     body("username").trim().isLength({ min: 3 }).withMessage("Username must be at least 3 characters"),
     body("name").trim().notEmpty().withMessage("Full name is required"),
-    body("class").trim().notEmpty().withMessage("Class is required"),
+    body("class").trim().custom(isValidClass).withMessage("Class must be from 4 to 10"),
     body("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters")
   ],
   validate,
@@ -105,6 +133,9 @@ router.put("/students/:id", async (req, res, next) => {
   try {
     const student = await Student.findById(req.params.id);
     if (!student) return res.status(404).json({ message: "Student not found" });
+    if (req.body.class && !isValidClass(req.body.class)) {
+      return res.status(400).json({ message: "Class must be from 4 to 10" });
+    }
 
     ["username", "name", "feeStatus"].forEach((field) => {
       if (req.body[field] !== undefined) student[field] = req.body[field];
@@ -115,7 +146,16 @@ router.put("/students/:id", async (req, res, next) => {
     }
     if (req.body.password) student.password = req.body.password;
 
-    await student.save();
+    student.paymentHistory.forEach((item) => {
+      if (["Pending", "Accepted"].includes(item.status)) item.amount = student.feeAmount;
+    });
+    await Promise.all([
+      student.save(),
+      Payment.updateMany(
+        { studentId: student._id, status: { $in: ["Pending", "Accepted"] } },
+        { $set: { amount: student.feeAmount } }
+      )
+    ]);
     res.json(student.toSafeObject());
   } catch (error) {
     next(error);
@@ -124,6 +164,7 @@ router.put("/students/:id", async (req, res, next) => {
 
 router.get("/payments", async (req, res, next) => {
   try {
+    await syncAllStudentFees();
     const query = {};
     if (req.query.status) query.status = req.query.status;
     if (req.query.month) query.month = req.query.month;
@@ -139,10 +180,13 @@ router.get("/payments", async (req, res, next) => {
 const syncStudentHistory = async (payment) => {
   const student = await Student.findById(payment.studentId);
   if (!student) return;
+  payment.amount = student.feeAmount;
+  await payment.save();
   student.feeStatus = payment.status === "Accepted" ? "Paid" : payment.status === "Rejected" ? "Rejected" : "Pending";
   const historyItem = student.paymentHistory.find((item) => String(item.paymentId) === String(payment._id));
   if (historyItem) {
     historyItem.status = payment.status;
+    historyItem.amount = payment.amount;
     historyItem.paidAt = payment.status === "Accepted" ? new Date() : undefined;
   }
   await student.save();

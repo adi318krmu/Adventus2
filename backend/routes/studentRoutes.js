@@ -4,7 +4,7 @@ import Student from "../models/Student.js";
 import Payment from "../models/Payment.js";
 import { protectStudent, protectAdmin } from "../middleware/auth.js";
 import { upload } from "../middleware/upload.js";
-import { getFeeForClass } from "../utils.js";
+import { getFeeForClass, isValidClass } from "../utils.js";
 import { makeTuitionId } from "../idUtils.js";
 
 const router = express.Router();
@@ -25,7 +25,7 @@ router.put(
   upload.single("profilePhoto"),
   [
     body("name").optional().trim().notEmpty().withMessage("Name cannot be empty"),
-    body("class").optional().trim().notEmpty().withMessage("Class cannot be empty")
+    body("class").optional().trim().custom(isValidClass).withMessage("Class must be from 4 to 10")
   ],
   validate,
   async (req, res, next) => {

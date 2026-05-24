@@ -5,17 +5,20 @@ import api from "../utils/api";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem("tms_token"));
-  const [role, setRole] = useState(localStorage.getItem("tms_role"));
+  const [token, setToken] = useState(sessionStorage.getItem("tms_token"));
+  const [role, setRole] = useState(sessionStorage.getItem("tms_role"));
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("tms_user");
+    const saved = sessionStorage.getItem("tms_user");
     return saved ? JSON.parse(saved) : null;
   });
 
   const saveSession = (payload) => {
-    localStorage.setItem("tms_token", payload.token);
-    localStorage.setItem("tms_role", payload.role);
-    localStorage.setItem("tms_user", JSON.stringify(payload.user));
+    sessionStorage.setItem("tms_token", payload.token);
+    sessionStorage.setItem("tms_role", payload.role);
+    sessionStorage.setItem("tms_user", JSON.stringify(payload.user));
+    localStorage.removeItem("tms_token");
+    localStorage.removeItem("tms_role");
+    localStorage.removeItem("tms_user");
     setToken(payload.token);
     setRole(payload.role);
     setUser(payload.user);
@@ -43,6 +46,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    sessionStorage.removeItem("tms_token");
+    sessionStorage.removeItem("tms_role");
+    sessionStorage.removeItem("tms_user");
     localStorage.removeItem("tms_token");
     localStorage.removeItem("tms_role");
     localStorage.removeItem("tms_user");
@@ -55,7 +61,7 @@ export const AuthProvider = ({ children }) => {
     if (!token || role !== "student") return;
     api.get("/student/profile").then(({ data }) => {
       setUser(data);
-      localStorage.setItem("tms_user", JSON.stringify(data));
+      sessionStorage.setItem("tms_user", JSON.stringify(data));
     }).catch(() => logout());
   }, [token, role]);
 

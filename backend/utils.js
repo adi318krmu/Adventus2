@@ -1,14 +1,18 @@
 export const classFees = {
-  "6": 1000,
-  "7": 1200,
-  "8": 1500,
-  "9": 1800,
-  "10": 2000,
-  "11": 2300,
-  "12": 2500
+  "4": 400,
+  "5": 500,
+  "6": 600,
+  "7": 700,
+  "8": 800,
+  "9": 900,
+  "10": 1000
 };
 
-export const getFeeForClass = (studentClass) => classFees[String(studentClass)] || 1000;
+export const validClasses = Object.keys(classFees);
+
+export const isValidClass = (studentClass) => validClasses.includes(String(studentClass));
+
+export const getFeeForClass = (studentClass) => classFees[String(studentClass)] || classFees["4"];
 
 export const currentMonth = () => {
   const now = new Date();

@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import api, { fileUrl } from "../utils/api";
 import { classes, feeByClass, formatMoney } from "../utils/fees";
 
-const emptyStudent = { username: "", name: "", class: "6", password: "" };
+const emptyStudent = { username: "", name: "", class: "4", password: "" };
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({});
@@ -98,7 +98,7 @@ const AdminDashboard = () => {
     payload.append("profilePhoto", file);
     const { data } = await api.put("/admin/profile", payload, { headers: { "Content-Type": "multipart/form-data" } });
     setUser(data);
-    localStorage.setItem("tms_user", JSON.stringify(data));
+    sessionStorage.setItem("tms_user", JSON.stringify(data));
     toast.success("Admin profile photo updated");
   };
 
