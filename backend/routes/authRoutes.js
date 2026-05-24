@@ -17,6 +17,21 @@ const validate = (req, res, next) => {
   next();
 };
 
+router.get("/brand", async (_req, res, next) => {
+  try {
+    const admin = await Admin.findOne({ profilePhoto: { $ne: "" } })
+      .select("profilePhoto")
+      .sort({ updatedAt: -1 });
+
+    res.json({
+      text: "Aditya Singh • Kaizen Sensei",
+      photo: admin?.profilePhoto || ""
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post(
   "/signup",
   [

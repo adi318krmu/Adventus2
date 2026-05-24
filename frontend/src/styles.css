@@ -42,6 +42,21 @@ body {
   border-radius: 999px;
 }
 
+.creator-branding {
+  animation: creatorFade 900ms ease-out both;
+}
+
+@keyframes creatorFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 0.7;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @layer components {
   .btn-primary {
     @apply rounded-xl bg-mint px-5 py-3 font-semibold text-ink transition hover:bg-[#5ce0cb] disabled:cursor-not-allowed disabled:opacity-60;
@@ -99,4 +114,8 @@ body {
 :root.light .input {
   background-color: #ffffff !important;
   color: #0b1111 !important;
+}
+
+:root.light .creator-branding {
+  background-color: rgba(255, 255, 255, 0.74) !important;
 }

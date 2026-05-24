@@ -8,23 +8,27 @@ import FeeManagement from "./pages/FeeManagement";
 import PaymentPage from "./pages/PaymentPage";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import CreatorBranding from "./components/CreatorBranding";
 
 const App = () => (
-  <Routes>
-    <Route path="/" element={<Landing />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/signup" element={<Signup />} />
-    <Route element={<ProtectedRoute role="student" />}>
-      <Route path="/student/dashboard" element={<StudentDashboard />} />
-      <Route path="/payment" element={<PaymentPage />} />
-      <Route path="/profile" element={<Profile />} />
-    </Route>
-    <Route element={<ProtectedRoute role="admin" />}>
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-      <Route path="/admin/fees" element={<FeeManagement />} />
-    </Route>
-    <Route path="*" element={<Navigate to="/" replace />} />
-  </Routes>
+  <>
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route element={<ProtectedRoute role="student" />}>
+        <Route path="/student/dashboard" element={<StudentDashboard />} />
+        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/profile" element={<Profile />} />
+      </Route>
+      <Route element={<ProtectedRoute role="admin" />}>
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/fees" element={<FeeManagement />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+    <CreatorBranding />
+  </>
 );
 
 export default App;
