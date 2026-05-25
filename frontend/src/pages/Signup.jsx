@@ -15,8 +15,8 @@ const Signup = () => {
     event.preventDefault();
     setLoading(true);
     try {
-      await signup(form);
-      navigate("/student/dashboard");
+      const data = await signup(form);
+      navigate(data.token ? "/student/dashboard" : "/login");
     } catch (error) {
       toast.error(error.response?.data?.message || "Signup failed");
     } finally {

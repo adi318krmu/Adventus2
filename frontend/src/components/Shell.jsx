@@ -8,7 +8,7 @@ const Shell = ({ children, type = "student" }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const links = type === "admin"
-    ? [["/admin/dashboard", "Dashboard"], ["/admin/fees", "Fee Records"]]
+    ? [["/admin/dashboard", "Dashboard"], ["/admin/fees", "Fee Records"], ["/admin/accounts", "Accounts"]]
     : [["/student/dashboard", "Dashboard"], ["/payment", "Payment"], ["/profile", "Profile"]];
 
   return (

@@ -15,6 +15,7 @@ A full-stack MERN tuition management web app for managing students, monthly fees
 ## Features
 
 - Student signup and login
+- Student enrollment approval before dashboard access
 - Admin login and admin account creation
 - Unique tuition IDs for students and admins
 - Student/admin profile photo upload
@@ -27,6 +28,7 @@ A full-stack MERN tuition management web app for managing students, monthly fees
 - Student add/edit/delete/search/filter
 - Month-wise payment records
 - Accept/reject cash payments
+- Reset, disable, enable, and delete student accounts from admin account management
 - CSV export
 - Day/night mode
 
@@ -139,6 +141,14 @@ Default seeded admin:
 username: admin
 password: admin123
 ```
+
+## Enrollment Rules
+
+- New student signup creates `accountStatus = Pending Enrollment`.
+- Pending students cannot access the student dashboard.
+- Admin approves or rejects new students from `Admin Dashboard -> New Student Enrollments`.
+- Approved students can log in and use the dashboard.
+- Rejected or disabled students cannot access protected student routes.
 
 ## Payment Rules
 

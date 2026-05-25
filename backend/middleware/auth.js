@@ -18,6 +18,14 @@ export const protectStudent = async (req, res, next) => {
 
     const student = await Student.findById(decoded.id).select("-password");
     if (!student) return res.status(401).json({ message: "Student not found" });
+    if (!student.accountStatus) {
+      student.accountStatus = "Approved";
+      await student.save();
+    }
+    if (student.accountDisabled) return res.status(403).json({ message: "Your account is disabled. Contact admin." });
+    if (student.accountStatus !== "Approved") {
+      return res.status(403).json({ message: `Enrollment status: ${student.accountStatus}` });
+    }
 
     req.user = student;
     req.role = "student";

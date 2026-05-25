@@ -7,6 +7,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import FeeManagement from "./pages/FeeManagement";
 import PaymentPage from "./pages/PaymentPage";
 import Profile from "./pages/Profile";
+import StudentAccountManagement from "./pages/StudentAccountManagement";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CreatorBranding from "./components/CreatorBranding";
 
@@ -24,6 +25,7 @@ const App = () => (
       <Route element={<ProtectedRoute role="admin" />}>
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/fees" element={<FeeManagement />} />
+        <Route path="/admin/accounts" element={<StudentAccountManagement />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

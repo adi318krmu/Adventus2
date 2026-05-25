@@ -22,6 +22,12 @@ const studentSchema = new mongoose.Schema(
     class: { type: String, required: true, trim: true },
     password: { type: String, required: true, minlength: 6 },
     profilePhoto: { type: String, default: "" },
+    accountStatus: {
+      type: String,
+      enum: ["Pending Enrollment", "Approved", "Rejected"],
+      default: "Pending Enrollment"
+    },
+    accountDisabled: { type: Boolean, default: false },
     feeAmount: { type: Number, required: true },
     feeStatus: {
       type: String,

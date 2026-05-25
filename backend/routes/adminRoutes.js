@@ -43,6 +43,11 @@ const syncAllStudentFees = async () => {
   await Promise.all(students.map((student) => syncStudentFeeRecords(student)));
 };
 
+const approvedStudentQuery = {
+  accountDisabled: { $ne: true },
+  $or: [{ accountStatus: "Approved" }, { accountStatus: { $exists: false } }]
+};
+
 router.use(protectAdmin);
 
 router.get("/profile", async (req, res) => {
@@ -66,8 +71,8 @@ router.get("/stats", async (_req, res, next) => {
   try {
     await syncAllStudentFees();
     const [totalStudents, paidStudents, pendingPayments, rejectedPayments, collection] = await Promise.all([
-      Student.countDocuments(),
-      Student.countDocuments({ feeStatus: "Paid" }),
+      Student.countDocuments(approvedStudentQuery),
+      Student.countDocuments({ ...approvedStudentQuery, feeStatus: "Paid" }),
       Payment.countDocuments({ status: "Pending" }),
       Payment.countDocuments({ status: "Rejected" }),
       Payment.aggregate([{ $match: { status: "Accepted" } }, { $group: { _id: null, total: { $sum: "$amount" } } }])
@@ -85,16 +90,54 @@ router.get("/stats", async (_req, res, next) => {
   }
 });
 
+router.get("/enrollments", async (_req, res, next) => {
+  try {
+    const students = await Student.find({ accountStatus: "Pending Enrollment" })
+      .select("-password")
+      .sort({ createdAt: -1 });
+    res.json(students);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/approve-student/:id", async (req, res, next) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) return res.status(404).json({ message: "Student not found" });
+    student.accountStatus = "Approved";
+    student.accountDisabled = false;
+    await student.save();
+    res.json(student.toSafeObject());
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/reject-student/:id", async (req, res, next) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) return res.status(404).json({ message: "Student not found" });
+    student.accountStatus = "Rejected";
+    await student.save();
+    res.json(student.toSafeObject());
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get("/students", async (req, res, next) => {
   try {
-    const query = {};
-    if (req.query.class) query.class = req.query.class;
+    const conditions = [];
+    if (req.query.all !== "true") conditions.push(approvedStudentQuery);
     if (req.query.search) {
-      query.$or = [
+      conditions.push({ $or: [
         { name: new RegExp(req.query.search, "i") },
         { username: new RegExp(req.query.search, "i") }
-      ];
+      ] });
     }
+    const query = conditions.length ? { $and: conditions } : {};
+    if (req.query.class) query.class = req.query.class;
     const students = await Student.find(query).select("-password").sort({ createdAt: -1 });
     res.json(students);
   } catch (error) {
@@ -119,6 +162,8 @@ router.post(
         name: req.body.name,
         class: req.body.class,
         password: req.body.password,
+        accountStatus: "Approved",
+        accountDisabled: false,
         feeAmount: getFeeForClass(req.body.class)
       });
       res.status(201).json(student.toSafeObject());
@@ -144,8 +189,6 @@ router.put("/students/:id", async (req, res, next) => {
       student.class = req.body.class;
       student.feeAmount = getFeeForClass(req.body.class);
     }
-    if (req.body.password) student.password = req.body.password;
-
     student.paymentHistory.forEach((item) => {
       if (["Pending", "Accepted"].includes(item.status)) item.amount = student.feeAmount;
     });
@@ -157,6 +200,51 @@ router.put("/students/:id", async (req, res, next) => {
       )
     ]);
     res.json(student.toSafeObject());
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put(
+  "/reset-password/:id",
+  [body("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters")],
+  validate,
+  async (req, res, next) => {
+    try {
+      const student = await Student.findById(req.params.id);
+      if (!student) return res.status(404).json({ message: "Student not found" });
+      student.password = req.body.password;
+      await student.save();
+      res.json({ message: "Password reset successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.put("/disable-account/:id", async (req, res, next) => {
+  try {
+    const student = await Student.findByIdAndUpdate(
+      req.params.id,
+      { accountDisabled: true },
+      { new: true }
+    ).select("-password");
+    if (!student) return res.status(404).json({ message: "Student not found" });
+    res.json(student);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/enable-account/:id", async (req, res, next) => {
+  try {
+    const student = await Student.findByIdAndUpdate(
+      req.params.id,
+      { accountDisabled: false, accountStatus: "Approved" },
+      { new: true }
+    ).select("-password");
+    if (!student) return res.status(404).json({ message: "Student not found" });
+    res.json(student);
   } catch (error) {
     next(error);
   }

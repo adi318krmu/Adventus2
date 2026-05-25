@@ -56,12 +56,13 @@ router.post(
         name,
         class: studentClass,
         password,
+        accountStatus: "Pending Enrollment",
+        accountDisabled: false,
         feeAmount: getFeeForClass(studentClass)
       });
 
       res.status(201).json({
-        token: signToken(student._id, "student"),
-        role: "student",
+        message: "Account created. Please wait for admin enrollment approval.",
         user: student.toSafeObject()
       });
     } catch (error) {
@@ -105,6 +106,16 @@ router.post(
       if (!student.tuitionId) {
         student.tuitionId = makeTuitionId("student");
         await student.save();
+      }
+      if (!student.accountStatus) {
+        student.accountStatus = "Approved";
+        await student.save();
+      }
+      if (student.accountDisabled) {
+        return res.status(403).json({ message: "Your account is disabled. Contact admin." });
+      }
+      if (student.accountStatus !== "Approved") {
+        return res.status(403).json({ message: `Enrollment status: ${student.accountStatus}` });
       }
 
       res.json({

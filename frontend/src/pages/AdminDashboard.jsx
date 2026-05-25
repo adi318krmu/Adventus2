@@ -11,6 +11,7 @@ const emptyStudent = { username: "", name: "", class: "4", password: "" };
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({});
+  const [enrollments, setEnrollments] = useState([]);
   const [students, setStudents] = useState([]);
   const [payments, setPayments] = useState([]);
   const [studentForm, setStudentForm] = useState(emptyStudent);
@@ -21,12 +22,14 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     const query = new URLSearchParams(filters).toString();
-    const [statsRes, studentsRes, paymentsRes] = await Promise.all([
+    const [statsRes, enrollmentsRes, studentsRes, paymentsRes] = await Promise.all([
       api.get("/admin/stats"),
+      api.get("/admin/enrollments"),
       api.get(`/admin/students?${query}`),
       api.get("/admin/payments")
     ]);
     setStats(statsRes.data);
+    setEnrollments(enrollmentsRes.data);
     setStudents(studentsRes.data);
     setPayments(paymentsRes.data);
     setLoading(false);
@@ -79,6 +82,12 @@ const AdminDashboard = () => {
     setStudentForm({ username: student.username, name: student.name, class: student.class, password: "" });
   };
 
+  const updateEnrollment = async (id, action) => {
+    await api.put(`/admin/${action}-student/${id}`);
+    toast.success(action === "approve" ? "Student approved" : "Student rejected");
+    loadData();
+  };
+
   const deleteStudent = async (id) => {
     if (!confirm("Delete this student and payment records?")) return;
     await api.delete(`/student/${id}`);
@@ -91,6 +100,8 @@ const AdminDashboard = () => {
     toast.success(action === "approve" ? "Payment accepted" : "Payment rejected");
     loadData();
   };
+
+  const pendingCashPayments = payments.filter((payment) => payment.status === "Pending" && payment.paymentMode === "Cash");
 
   const uploadAdminPhoto = async (file) => {
     if (!file) return;
@@ -135,6 +146,41 @@ const AdminDashboard = () => {
         </label>
       </section>
 
+      <section className="card mt-6">
+        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-mint">Enrollment Approval</p>
+            <h2 className="mt-1 text-2xl font-bold">New Student Enrollments</h2>
+          </div>
+          <StatusBadge status={`${enrollments.length} Pending`} />
+        </div>
+        <div className="mt-5 overflow-x-auto">
+          <table className="w-full min-w-[850px] text-left">
+            <thead className="text-sm text-slate-400">
+              <tr><th className="py-3">Student Name</th><th>Username</th><th>Class</th><th>Tuition ID</th><th>Signup Date</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              {enrollments.map((student) => (
+                <tr key={student._id} className="border-t border-line">
+                  <td className="py-4 font-semibold">{student.name}</td>
+                  <td>@{student.username}</td>
+                  <td>Class {student.class}</td>
+                  <td>{student.tuitionId}</td>
+                  <td>{new Date(student.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    <div className="flex gap-2">
+                      <button className="btn-outline !px-3" onClick={() => updateEnrollment(student._id, "approve")}><Check size={17} /></button>
+                      <button className="btn-outline !px-3" onClick={() => updateEnrollment(student._id, "reject")}><X size={17} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {enrollments.length === 0 && <tr><td className="py-5 text-slate-400">No new enrollment requests.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <section className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
         <form onSubmit={saveStudent} className="card">
           <h2 className="text-2xl font-bold">{editingId ? "Edit Student" : "Add Student"}</h2>
@@ -142,7 +188,7 @@ const AdminDashboard = () => {
             <input className="input" placeholder="Username" value={studentForm.username} onChange={(e) => setStudentForm({ ...studentForm, username: e.target.value })} />
             <input className="input" placeholder="Full Name" value={studentForm.name} onChange={(e) => setStudentForm({ ...studentForm, name: e.target.value })} />
             <select className="input" value={studentForm.class} onChange={(e) => setStudentForm({ ...studentForm, class: e.target.value })}>{classes.map((item) => <option key={item}>{item}</option>)}</select>
-            <input className="input" placeholder="Password" type="password" value={studentForm.password} onChange={(e) => setStudentForm({ ...studentForm, password: e.target.value })} />
+            {!editingId && <input className="input" placeholder="Password" type="password" value={studentForm.password} onChange={(e) => setStudentForm({ ...studentForm, password: e.target.value })} />}
           </div>
           <p className="mt-4 text-mint">Fee: {formatMoney(feeByClass[studentForm.class])}</p>
           <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -170,25 +216,20 @@ const AdminDashboard = () => {
       </section>
 
       <section className="card mt-6">
-        <h2 className="text-2xl font-bold">Payment Approvals</h2>
+        <h2 className="text-2xl font-bold">Cash Payment Approvals</h2>
         <div className="mt-5 overflow-x-auto">
-          <table className="w-full min-w-[980px] text-left">
-            <thead className="text-sm text-slate-400"><tr><th className="py-3">Student</th><th>Class</th><th>Month</th><th>Amount</th><th>Mode</th><th>Transaction</th><th>Note</th><th>Proof</th><th>Status</th><th>Action</th></tr></thead>
+          <table className="w-full min-w-[820px] text-left">
+            <thead className="text-sm text-slate-400"><tr><th className="py-3">Student Name</th><th>Payment Mode</th><th>Amount</th><th>Month</th><th>Payment Notes</th><th>Action</th></tr></thead>
             <tbody>
-              {payments.map((payment) => (
+              {pendingCashPayments.map((payment) => (
                 <tr key={payment._id} className="border-t border-line">
-                  <td className="py-4">{payment.studentId?.name}</td><td>{payment.studentId?.class}</td><td>{payment.month}</td><td>{formatMoney(payment.amount)}</td><td>{payment.paymentMode}</td><td>{payment.transactionId}</td><td className="max-w-48 truncate">{payment.paymentNote}</td>
-                  <td>{payment.screenshot ? <a className="text-mint" href={fileUrl(payment.screenshot)} target="_blank">View</a> : "None"}</td>
-                  <td><StatusBadge status={payment.status} /></td>
+                  <td className="py-4">{payment.studentId?.name}</td><td>{payment.paymentMode}</td><td>{formatMoney(payment.amount)}</td><td>{payment.month}</td><td className="max-w-72 truncate">{payment.paymentNote || "No note"}</td>
                   <td>
-                    {payment.status === "Pending" ? (
-                      <div className="flex gap-2"><button className="btn-outline !px-3" onClick={() => updatePayment(payment._id, "approve")}><Check size={17} /></button><button className="btn-outline !px-3" onClick={() => updatePayment(payment._id, "reject")}><X size={17} /></button></div>
-                    ) : (
-                      <span className="text-sm text-slate-400">No action</span>
-                    )}
+                    <div className="flex gap-2"><button className="btn-outline !px-3" onClick={() => updatePayment(payment._id, "approve")}><Check size={17} /></button><button className="btn-outline !px-3" onClick={() => updatePayment(payment._id, "reject")}><X size={17} /></button></div>
                   </td>
                 </tr>
               ))}
+              {pendingCashPayments.length === 0 && <tr><td className="py-5 text-slate-400">No pending cash payments.</td></tr>}
             </tbody>
           </table>
         </div>

@@ -26,8 +26,8 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (form) => {
     const { data } = await api.post("/signup", form);
-    saveSession(data);
-    toast.success("Account created");
+    if (data.token) saveSession(data);
+    toast.success(data.message || "Account created");
     return data;
   };
 
