@@ -39,13 +39,15 @@ router.post(
   [
     body("username").trim().isLength({ min: 3 }).withMessage("Username must be at least 3 characters"),
     body("name").trim().notEmpty().withMessage("Full name is required"),
+    body("email").trim().isEmail().withMessage("Valid email is required"),
+    body("phone").trim().notEmpty().withMessage("Phone number is required"),
     body("class").trim().custom(isValidClass).withMessage("Class must be from 4 to 10"),
     body("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters")
   ],
   validate,
   async (req, res, next) => {
     try {
-      const { username, name, password } = req.body;
+      const { username, name, email, phone, password } = req.body;
       const studentClass = req.body.class;
       const exists = await Student.findOne({ username: username.toLowerCase() });
       if (exists) return res.status(409).json({ message: "Username already exists" });
@@ -54,6 +56,8 @@ router.post(
         username,
         tuitionId: makeTuitionId("student"),
         name,
+        email,
+        phone,
         class: studentClass,
         password,
         accountStatus: "Pending Enrollment",

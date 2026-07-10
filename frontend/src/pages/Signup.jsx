@@ -9,7 +9,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const { signup } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ username: "", name: "", class: "4", password: "" });
+  const [form, setForm] = useState({ username: "", name: "", email: "", phone: "", class: "4", password: "" });
 
   const submit = async (event) => {
     event.preventDefault();
@@ -32,6 +32,8 @@ const Signup = () => {
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <input className="input" placeholder="Username" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
           <input className="input" placeholder="Full Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <input className="input" placeholder="Email Address" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+          <input className="input" placeholder="Phone Number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
           <select className="input" value={form.class} onChange={(e) => setForm({ ...form, class: e.target.value })}>
             {classes.map((item) => <option key={item} value={item}>Class {item}</option>)}
           </select>

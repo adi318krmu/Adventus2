@@ -19,8 +19,11 @@ const studentSchema = new mongoose.Schema(
     username: { type: String, required: true, unique: true, trim: true, lowercase: true },
     tuitionId: { type: String, unique: true, sparse: true, index: true },
     name: { type: String, required: true, trim: true },
+    email: { type: String, trim: true, lowercase: true },
+    phone: { type: String, trim: true },
     class: { type: String, required: true, trim: true },
     password: { type: String, required: true, minlength: 6 },
+    isTempPassword: { type: Boolean, default: false },
     profilePhoto: { type: String, default: "" },
     accountStatus: {
       type: String,

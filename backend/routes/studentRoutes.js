@@ -25,13 +25,17 @@ router.put(
   profileUpload.single("profilePhoto"),
   [
     body("name").optional().trim().notEmpty().withMessage("Name cannot be empty"),
-    body("class").optional().trim().custom(isValidClass).withMessage("Class must be from 4 to 10")
+    body("class").optional().trim().custom(isValidClass).withMessage("Class must be from 4 to 10"),
+    body("email").optional().trim().isEmail().withMessage("Invalid email format"),
+    body("phone").optional().trim().notEmpty().withMessage("Phone cannot be empty")
   ],
   validate,
   async (req, res, next) => {
     try {
       const student = await Student.findById(req.user._id);
       if (req.body.name) student.name = req.body.name;
+      if (req.body.email) student.email = req.body.email.toLowerCase();
+      if (req.body.phone) student.phone = req.body.phone;
       if (req.body.class) {
         student.class = req.body.class;
         student.feeAmount = getFeeForClass(req.body.class);

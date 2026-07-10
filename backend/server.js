@@ -10,6 +10,8 @@ import authRoutes from "./routes/authRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import materialsRoutes from "./routes/materialsRoutes.js";
+import passwordResetRoutes from "./routes/passwordResetRoutes.js";
 
 dotenv.config();
 
@@ -53,6 +55,8 @@ app.use("/api", authRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/materials", materialsRoutes);
+app.use("/api", passwordResetRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` });

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { CreditCard, History, UserRound } from "lucide-react";
+import { CreditCard, History, UserRound, BookOpen } from "lucide-react";
+import toast from "react-hot-toast";
 import Shell from "../components/Shell";
 import StatusBadge from "../components/StatusBadge";
 import { useAuth } from "../context/AuthContext";
@@ -10,11 +11,43 @@ import { formatMoney } from "../utils/fees";
 const StudentDashboard = () => {
   const { user } = useAuth();
   const [history, setHistory] = useState([]);
+  const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/payment/history").then(({ data }) => setHistory(data)).finally(() => setLoading(false));
+    Promise.all([
+      api.get("/payment/history"),
+      api.get("/materials")
+    ])
+      .then(([historyRes, materialsRes]) => {
+        setHistory(historyRes.data);
+        setMaterials(materialsRes.data);
+      })
+      .catch(() => toast.error("Unable to load student data"))
+      .finally(() => setLoading(false));
   }, []);
+
+  const downloadFile = async (id, fileName) => {
+    toast.success("File Download Started");
+    try {
+      const { data } = await api.get(`/materials/download/${id}?download=true`, { responseType: "blob" });
+      const url = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error("Download failed");
+    }
+  };
+
+  const lastAccepted = history.find((p) => p.status === "Accepted");
+  const lastPayment = lastAccepted ? `${formatMoney(lastAccepted.amount)} (${lastAccepted.month})` : "None";
+  const numMaterials = materials.length;
+  const recentMaterials = materials.slice(0, 3);
 
   return (
     <Shell>
@@ -31,21 +64,67 @@ const StudentDashboard = () => {
             </div>
           </div>
           <p className="mt-3 text-slate-400">Class {user?.class} monthly fee is ready for this billing cycle.</p>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-line p-5"><UserRound className="text-mint" /><p className="mt-4 text-sm text-slate-400">Class</p><p className="text-2xl font-bold">{user?.class}</p></div>
-            <div className="rounded-xl border border-line p-5"><CreditCard className="text-mint" /><p className="mt-4 text-sm text-slate-400">Monthly Fee</p><p className="text-2xl font-bold">{formatMoney(user?.feeAmount)}</p></div>
-            <div className="rounded-xl border border-line p-5"><History className="text-mint" /><p className="mt-4 text-sm text-slate-400">Status</p><div className="mt-2"><StatusBadge status={user?.feeStatus} /></div></div>
+          
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <div className="rounded-xl border border-line p-5">
+              <UserRound className="text-mint" />
+              <p className="mt-2 text-sm text-slate-400">Student Name</p>
+              <p className="text-lg font-bold truncate">{user?.name}</p>
+            </div>
+            <div className="rounded-xl border border-line p-5">
+              <BookOpen className="text-mint" />
+              <p className="mt-2 text-sm text-slate-400">Class</p>
+              <p className="text-lg font-bold">Class {user?.class}</p>
+            </div>
+            <div className="rounded-xl border border-line p-5">
+              <History className="text-mint" />
+              <p className="mt-2 text-sm text-slate-400">Fee Status</p>
+              <div className="mt-1"><StatusBadge status={user?.feeStatus} /></div>
+            </div>
+            <div className="rounded-xl border border-line p-5">
+              <CreditCard className="text-mint" />
+              <p className="mt-2 text-sm text-slate-400">Pending Fees</p>
+              <p className="text-lg font-bold">{formatMoney(user?.feeStatus === "Paid" ? 0 : user?.feeAmount)}</p>
+            </div>
+            <div className="rounded-xl border border-line p-5">
+              <CreditCard className="text-mint" />
+              <p className="mt-2 text-sm text-slate-400">Last Payment</p>
+              <p className="text-lg font-bold truncate">{lastPayment}</p>
+            </div>
+            <div className="rounded-xl border border-line p-5">
+              <BookOpen className="text-mint" />
+              <p className="mt-2 text-sm text-slate-400">Study Materials</p>
+              <p className="text-lg font-bold">{numMaterials}</p>
+            </div>
           </div>
           <Link to="/payment" className="btn-primary mt-8 inline-block">Submit Payment</Link>
         </section>
-        <aside className="card">
-          <h2 className="text-xl font-bold">Profile</h2>
-          <div className="mt-5 space-y-4 text-slate-300">
-            <p><span className="text-slate-500">Username:</span> {user?.username}</p>
-            <p><span className="text-slate-500">Tuition ID:</span> {user?.tuitionId || "Not generated yet"}</p>
-            <p><span className="text-slate-500">Full Name:</span> {user?.name}</p>
-            <p><span className="text-slate-500">Class:</span> {user?.class}</p>
+
+        <aside className="card flex flex-col justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-mint">Recent Study Materials</h2>
+            <div className="mt-5 space-y-4">
+              {loading ? (
+                <p className="text-slate-400 text-sm">Loading...</p>
+              ) : recentMaterials.length === 0 ? (
+                <p className="text-slate-400 text-sm">No study materials uploaded yet.</p>
+              ) : (
+                recentMaterials.map((mat) => (
+                  <div key={mat._id} className="rounded-xl border border-line bg-panelSoft/50 p-4">
+                    <p className="font-semibold text-white truncate">{mat.title}</p>
+                    <p className="text-xs text-slate-400 mt-1">{mat.subject} • {new Date(mat.createdAt).toLocaleDateString()}</p>
+                    <div className="mt-3 flex gap-2">
+                      <Link to={`/student/materials/${mat._id}`} className="text-xs font-bold text-mint hover:underline">View</Link>
+                      <button onClick={() => downloadFile(mat._id, mat.fileName)} className="text-xs font-bold text-slate-400 hover:text-white ml-auto">Download</button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
+          {!loading && materials.length > 0 && (
+            <Link to="/student/materials" className="btn-outline mt-6 block text-center text-xs">View All Materials</Link>
+          )}
         </aside>
       </div>
 

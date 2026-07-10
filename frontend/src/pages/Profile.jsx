@@ -7,7 +7,13 @@ import { classes, feeByClass, formatMoney } from "../utils/fees";
 
 const Profile = () => {
   const { user, setUser } = useAuth();
-  const [form, setForm] = useState({ name: user?.name || "", class: user?.class || "4", profilePhoto: null });
+  const [form, setForm] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    class: user?.class || "4",
+    profilePhoto: null
+  });
   const [loading, setLoading] = useState(false);
 
   const submit = async (event) => {
@@ -16,6 +22,8 @@ const Profile = () => {
     try {
       const payload = new FormData();
       payload.append("name", form.name);
+      payload.append("email", form.email);
+      payload.append("phone", form.phone);
       payload.append("class", form.class);
       if (form.profilePhoto) payload.append("profilePhoto", form.profilePhoto);
       const { data } = await api.put("/student/profile", payload, { headers: { "Content-Type": "multipart/form-data" } });
@@ -44,7 +52,9 @@ const Profile = () => {
         </div>
         <div className="mt-6 space-y-4">
           <input className="input" disabled value={user?.username || ""} />
-          <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <input className="input" placeholder="Full Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <input className="input" placeholder="Email Address" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+          <input className="input" placeholder="Phone Number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
           <select className="input" value={form.class} onChange={(e) => setForm({ ...form, class: e.target.value })}>
             {classes.map((item) => <option key={item} value={item}>Class {item}</option>)}
           </select>

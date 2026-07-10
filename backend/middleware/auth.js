@@ -53,3 +53,31 @@ export const protectAdmin = async (req, res, next) => {
     res.status(401).json({ message: "Invalid or expired token" });
   }
 };
+
+export const protectAny = async (req, res, next) => {
+  try {
+    const token = readToken(req);
+    if (!token) return res.status(401).json({ message: "Not authorized" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.role === "admin") {
+      const admin = await Admin.findById(decoded.id).select("-password");
+      if (!admin) return res.status(401).json({ message: "Admin not found" });
+      req.user = admin;
+      req.role = "admin";
+      return next();
+    } else if (decoded.role === "student") {
+      const student = await Student.findById(decoded.id).select("-password");
+      if (!student) return res.status(401).json({ message: "Student not found" });
+      if (student.accountDisabled) return res.status(403).json({ message: "Your account is disabled. Contact admin." });
+      if (student.accountStatus !== "Approved") return res.status(403).json({ message: `Enrollment status: ${student.accountStatus}` });
+      req.user = student;
+      req.role = "student";
+      return next();
+    }
+    return res.status(403).json({ message: "Access denied" });
+  } catch {
+    res.status(401).json({ message: "Invalid or expired token" });
+  }
+};
+

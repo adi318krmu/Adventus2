@@ -30,3 +30,33 @@ export const profileUpload = multer({
   },
   limits: { fileSize: 1.5 * 1024 * 1024 }
 });
+
+import fs from "fs";
+const materialDir = "study-materials";
+if (!fs.existsSync(materialDir)) {
+  fs.mkdirSync(materialDir, { recursive: true });
+}
+
+const materialStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, materialDir),
+  filename: (_req, file, cb) => {
+    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(null, `${unique}${path.extname(file.originalname)}`);
+  }
+});
+
+const materialFileFilter = (_req, file, cb) => {
+  const allowed = ["application/pdf", "image/jpeg", "image/png"];
+  if (allowed.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only PDF, JPG, JPEG, and PNG files are allowed"), false);
+  }
+};
+
+export const uploadMaterial = multer({
+  storage: materialStorage,
+  fileFilter: materialFileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }
+});
+

@@ -3,6 +3,8 @@ import { body, validationResult } from "express-validator";
 import Student from "../models/Student.js";
 import Payment from "../models/Payment.js";
 import Admin from "../models/Admin.js";
+import StudyMaterial from "../models/StudyMaterial.js";
+import PasswordResetRequest from "../models/PasswordResetRequest.js";
 import { protectAdmin } from "../middleware/auth.js";
 import { profileUpload } from "../middleware/upload.js";
 import { getFeeForClass, isValidClass } from "../utils.js";
@@ -70,12 +72,30 @@ router.put("/profile", profileUpload.single("profilePhoto"), async (req, res, ne
 router.get("/stats", async (_req, res, next) => {
   try {
     await syncAllStudentFees();
-    const [totalStudents, paidStudents, pendingPayments, rejectedPayments, collection] = await Promise.all([
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const [
+      totalStudents,
+      paidStudents,
+      pendingPayments,
+      rejectedPayments,
+      collection,
+      totalMaterials,
+      pendingPasswordRequests,
+      todayAdmissions
+    ] = await Promise.all([
       Student.countDocuments(approvedStudentQuery),
       Student.countDocuments({ ...approvedStudentQuery, feeStatus: "Paid" }),
       Payment.countDocuments({ status: "Pending" }),
       Payment.countDocuments({ status: "Rejected" }),
-      Payment.aggregate([{ $match: { status: "Accepted" } }, { $group: { _id: null, total: { $sum: "$amount" } } }])
+      Payment.aggregate([{ $match: { status: "Accepted" } }, { $group: { _id: null, total: { $sum: "$amount" } } }]),
+      StudyMaterial.countDocuments(),
+      PasswordResetRequest.countDocuments({ status: "Pending" }),
+      Student.countDocuments({
+        ...approvedStudentQuery,
+        createdAt: { $gte: startOfToday }
+      })
     ]);
 
     res.json({
@@ -83,7 +103,11 @@ router.get("/stats", async (_req, res, next) => {
       paidStudents,
       pendingPayments,
       rejectedPayments,
-      totalCollection: collection[0]?.total || 0
+      totalCollection: collection[0]?.total || 0,
+      totalMaterials,
+      pendingPasswordRequests,
+      pendingFeeRequests: pendingPayments,
+      todayAdmissions
     });
   } catch (error) {
     next(error);
@@ -150,6 +174,8 @@ router.post(
   [
     body("username").trim().isLength({ min: 3 }).withMessage("Username must be at least 3 characters"),
     body("name").trim().notEmpty().withMessage("Full name is required"),
+    body("email").trim().isEmail().withMessage("Provide a valid registered email"),
+    body("phone").trim().notEmpty().withMessage("Registered phone number is required"),
     body("class").trim().custom(isValidClass).withMessage("Class must be from 4 to 10"),
     body("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters")
   ],
@@ -160,6 +186,8 @@ router.post(
         username: req.body.username,
         tuitionId: makeTuitionId("student"),
         name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
         class: req.body.class,
         password: req.body.password,
         accountStatus: "Approved",
@@ -182,8 +210,14 @@ router.put("/students/:id", async (req, res, next) => {
       return res.status(400).json({ message: "Class must be from 4 to 10" });
     }
 
-    ["username", "name", "feeStatus"].forEach((field) => {
-      if (req.body[field] !== undefined) student[field] = req.body[field];
+    ["username", "name", "feeStatus", "email", "phone"].forEach((field) => {
+      if (req.body[field] !== undefined) {
+        if (field === "email") {
+          student[field] = req.body[field].toLowerCase();
+        } else {
+          student[field] = req.body[field];
+        }
+      }
     });
     if (req.body.class) {
       student.class = req.body.class;

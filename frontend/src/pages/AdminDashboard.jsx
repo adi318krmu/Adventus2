@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import api, { fileUrl } from "../utils/api";
 import { classes, feeByClass, formatMoney } from "../utils/fees";
 
-const emptyStudent = { username: "", name: "", class: "4", password: "" };
+const emptyStudent = { username: "", name: "", email: "", phone: "", class: "4", password: "" };
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({});
@@ -41,10 +41,10 @@ const AdminDashboard = () => {
 
   const cards = useMemo(() => [
     ["Total Students", stats.totalStudents || 0],
-    ["Paid Students", stats.paidStudents || 0],
-    ["Pending Payments", stats.pendingPayments || 0],
-    ["Rejected Payments", stats.rejectedPayments || 0],
-    ["Total Collection", formatMoney(stats.totalCollection || 0)]
+    ["Total Study Materials", stats.totalMaterials || 0],
+    ["Pending Password Requests", stats.pendingPasswordRequests || 0],
+    ["Pending Fee Requests", stats.pendingFeeRequests || 0],
+    ["Today's Admissions", stats.todayAdmissions || 0]
   ], [stats]);
 
   const downloadCsv = async () => {
@@ -79,7 +79,14 @@ const AdminDashboard = () => {
 
   const startEdit = (student) => {
     setEditingId(student._id);
-    setStudentForm({ username: student.username, name: student.name, class: student.class, password: "" });
+    setStudentForm({
+      username: student.username,
+      name: student.name,
+      email: student.email || "",
+      phone: student.phone || "",
+      class: student.class,
+      password: ""
+    });
   };
 
   const updateEnrollment = async (id, action) => {
@@ -187,6 +194,8 @@ const AdminDashboard = () => {
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <input className="input" placeholder="Username" value={studentForm.username} onChange={(e) => setStudentForm({ ...studentForm, username: e.target.value })} />
             <input className="input" placeholder="Full Name" value={studentForm.name} onChange={(e) => setStudentForm({ ...studentForm, name: e.target.value })} />
+            <input className="input" placeholder="Email Address" type="email" value={studentForm.email} onChange={(e) => setStudentForm({ ...studentForm, email: e.target.value })} />
+            <input className="input" placeholder="Phone Number" value={studentForm.phone} onChange={(e) => setStudentForm({ ...studentForm, phone: e.target.value })} />
             <select className="input" value={studentForm.class} onChange={(e) => setStudentForm({ ...studentForm, class: e.target.value })}>{classes.map((item) => <option key={item}>{item}</option>)}</select>
             {!editingId && <input className="input" placeholder="Password" type="password" value={studentForm.password} onChange={(e) => setStudentForm({ ...studentForm, password: e.target.value })} />}
           </div>
@@ -206,7 +215,7 @@ const AdminDashboard = () => {
           <div className="mt-5 max-h-[360px] overflow-auto">
             {students.map((student) => (
               <div key={student._id} className="flex flex-col gap-3 border-t border-line py-4 md:flex-row md:items-center md:justify-between">
-                <div><p className="font-bold">{student.name}</p><p className="text-sm text-slate-400">{student.tuitionId || "No ID"} | @{student.username} | Class {student.class} | {formatMoney(student.feeAmount)}</p></div>
+                <div><p className="font-bold">{student.name}</p><p className="text-sm text-slate-400">{student.tuitionId || "No ID"} | @{student.username} | {student.email || "No Email"} | {student.phone || "No Phone"} | Class {student.class} | {formatMoney(student.feeAmount)}</p></div>
                 <div className="flex items-center gap-3"><StatusBadge status={student.feeStatus} /><button className="btn-outline !px-3" onClick={() => startEdit(student)}><Pencil size={17} /></button><button className="btn-outline !px-3" onClick={() => deleteStudent(student._id)}><Trash2 size={17} /></button></div>
               </div>
             ))}

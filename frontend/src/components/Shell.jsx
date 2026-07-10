@@ -5,11 +5,24 @@ import { useAuth } from "../context/AuthContext";
 import ThemeToggle from "./ThemeToggle";
 
 const Shell = ({ children, type = "student" }) => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const links = type === "admin"
-    ? [["/admin/dashboard", "Dashboard"], ["/admin/fees", "Fee Records"], ["/admin/accounts", "Accounts"]]
-    : [["/student/dashboard", "Dashboard"], ["/payment", "Payment"], ["/profile", "Profile"]];
+    ? [
+        ["/admin/dashboard", "Dashboard"],
+        ["/admin/materials", "Study Materials"],
+        ["/admin/password-requests", "Password Requests"],
+        ["/admin/fees", "Fee Records"],
+        ["/admin/accounts", "Accounts"]
+      ]
+    : user?.isTempPassword
+      ? [["/student/change-password", "Change Password"]]
+      : [
+          ["/student/dashboard", "Dashboard"],
+          ["/student/materials", "Study Materials"],
+          ["/payment", "Payment"],
+          ["/profile", "Profile"]
+        ];
 
   return (
     <div className="min-h-screen bg-ink text-white">
