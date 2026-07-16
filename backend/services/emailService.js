@@ -20,6 +20,7 @@ export const sendOTPEmail = async (email, otp, purpose) => {
     tls: {
       rejectUnauthorized: false
     },
+    family: 4, // Force IPv4 to resolve ENETUNREACH on environments without IPv6 routing like Render
     connectionTimeout: 10000, // 10s timeout
     socketTimeout: 10000
   });
