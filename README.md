@@ -5,9 +5,9 @@ A comprehensive full-stack MERN application designed to streamline tuition cente
 ## Tech Stack
 
 - Frontend: React.js, Vite, Tailwind CSS, Axios, React Router, Context API
-- Backend: Node.js, Express.js
+- Backend: Node.js, Express.js, Nodemailer (Gmail SMTP)
 - Database: MongoDB Atlas with Mongoose
-- Authentication: JWT and bcrypt password hashing
+- Authentication: JWT, bcrypt password hashing, and secure Email OTP verification
 - Uploads: Multer local uploads for payment screenshots; MongoDB data URLs for profile photos
 - Notifications: React Hot Toast
 - Payment: UPI QR/transaction ID and cash approval workflow
@@ -42,11 +42,14 @@ ADventus/
 │   │   └── upload.js
 │   ├── models/
 │   │   ├── Admin.js
+│   │   ├── OTP.js
 │   │   ├── Payment.js
 │   │   └── Student.js
 │   ├── routes/
 │   │   ├── adminRoutes.js
 │   │   ├── authRoutes.js
+│   ├── services/
+│   │   └── emailService.js
 │   │   ├── paymentRoutes.js
 │   │   └── studentRoutes.js
 │   ├── uploads/
@@ -104,7 +107,27 @@ ADMIN_USERNAME=admin
 ADMIN_PASSWORD=admin123
 UPI_ID=9355659492@ybl
 QR_IMAGE_URL=/sbi-upi-qr.jpeg
+
+# Nodemailer (Gmail App Password config)
+EMAIL_USER=your-gmail-address@gmail.com
+EMAIL_PASS=your-16-char-gmail-app-password
 ```
+
+### Gmail App Password Generation Guide
+
+To allow Nodemailer to securely send OTP emails using your Google Account, you need to generate a **Gmail App Password**. Follow these steps:
+
+1. **Go to Google Account Settings**: Open [Google Account Settings](https://myaccount.google.com/).
+2. **Enable 2-Step Verification**:
+   - Select **Security** from the left navigation panel.
+   - Under *How you sign in to Google*, click on **2-Step Verification** and complete the setup if it's not already enabled.
+3. **Generate App Password**:
+   - Search for **App passwords** in the search bar at the top, or navigate to *Security* > *2-Step Verification* > *App passwords* (at the very bottom).
+   - Enter a name for the app (e.g., "Adventus").
+   - Click **Create**.
+4. **Copy the App Password**:
+   - Google will display a 16-character password (e.g., `abcd efgh ijkl mnop`).
+   - Copy this password and paste it as the `EMAIL_PASS` environment variable in your `backend/.env` file. *Do not include spaces in your .env value (e.g., `EMAIL_PASS=abcdefghijklmnop`).*
 
 Frontend `.env`:
 
@@ -187,6 +210,14 @@ GET    /api/admin/payments
 PUT    /api/admin/approve
 PUT    /api/admin/reject
 GET    /api/admin/export/fees.csv
+
+# OTP & Verification Routes
+POST   /api/auth/send-registration-otp
+POST   /api/auth/verify-registration-otp
+POST   /api/auth/resend-registration-otp
+POST   /api/auth/send-email-verification
+POST   /api/auth/verify-email
+POST   /api/auth/resend-email-verification
 ```
 
 ## Deploy Backend On Render

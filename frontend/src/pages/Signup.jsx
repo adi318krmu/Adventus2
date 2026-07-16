@@ -2,23 +2,26 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Brand from "../components/Brand";
-import { useAuth } from "../context/AuthContext";
+import api from "../utils/api";
 import { classes, feeByClass, formatMoney } from "../utils/fees";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const { signup } = useAuth();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ username: "", name: "", email: "", phone: "", class: "4", password: "" });
 
   const submit = async (event) => {
     event.preventDefault();
+    if (!form.username || !form.name || !form.email || !form.phone || !form.password) {
+      return toast.error("All fields are required");
+    }
     setLoading(true);
     try {
-      const data = await signup(form);
-      navigate(data.token ? "/student/dashboard" : "/login");
+      const { data } = await api.post("/auth/send-registration-otp", form);
+      toast.success(data.message || "Verification code sent successfully");
+      navigate("/verify-otp", { state: { registrationForm: form } });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Signup failed");
+      toast.error(error.response?.data?.message || "Signup initialization failed");
     } finally {
       setLoading(false);
     }

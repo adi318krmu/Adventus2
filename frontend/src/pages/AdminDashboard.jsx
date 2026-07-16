@@ -130,11 +130,15 @@ const AdminDashboard = () => {
         <button className="btn-outline flex items-center gap-2" onClick={downloadCsv}><Download size={18} /> Export CSV</button>
       </div>
 
-      <section className="mt-6 grid gap-4 md:grid-cols-5">
+      <section className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {cards.map(([label, value]) => (
-          <div className="card" key={label}><p className="text-sm text-slate-400">{label}</p><p className="mt-3 text-2xl font-black">{value}</p></div>
+          <div className="card flex flex-col justify-between h-full min-h-[110px]" key={label}>
+            <p className="text-sm text-slate-400 leading-snug">{label}</p>
+            <p className="mt-4 text-2xl font-black text-white">{value}</p>
+          </div>
         ))}
       </section>
+
 
       <section className="card mt-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
