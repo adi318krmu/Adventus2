@@ -180,7 +180,7 @@ password: admin123
 ## Class Fee Table
 
 ```text
-Class 4  -> ₹400
+Class 4  -> ₹500
 Class 5  -> ₹500
 Class 6  -> ₹600
 Class 7  -> ₹700
