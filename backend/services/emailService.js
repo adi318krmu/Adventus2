@@ -1,12 +1,27 @@
 import nodemailer from "nodemailer";
 
 export const sendOTPEmail = async (email, otp, purpose) => {
+  console.log(`[EmailService] Preparing to send OTP to ${email}...`);
+
+  if (!process.env.EMAIL_USER || process.env.EMAIL_USER.includes("your-gmail-address") || 
+      !process.env.EMAIL_PASS || process.env.EMAIL_PASS.includes("your-gmail-app-password")) {
+    console.error("[EmailService] Error: Gmail credentials are not configured or are placeholders in backend/.env!");
+    throw new Error("Email service is not configured. Please update EMAIL_USER and EMAIL_PASS in your backend/.env file with a valid Gmail and App Password.");
+  }
+
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // false for 587 (uses STARTTLS)
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: process.env.EMAIL_USER.trim(),
+      pass: process.env.EMAIL_PASS.trim(),
     },
+    tls: {
+      rejectUnauthorized: false
+    },
+    connectionTimeout: 10000, // 10s timeout
+    socketTimeout: 10000
   });
 
   const isReg = purpose === "registration";
@@ -45,5 +60,11 @@ export const sendOTPEmail = async (email, otp, purpose) => {
     `,
   };
 
-  await transporter.sendMail(mailOptions);
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`[EmailService] OTP email sent successfully to ${email}`);
+  } catch (error) {
+    console.error(`[EmailService] Failed to send email to ${email}:`, error);
+    throw new Error(`Failed to send email: ${error.message}`);
+  }
 };
