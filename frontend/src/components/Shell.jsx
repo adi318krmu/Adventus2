@@ -1,8 +1,28 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { LogOut, LayoutDashboard, BookOpen, KeyRound, CreditCard, User } from "lucide-react";
 import Brand from "./Brand";
 import { useAuth } from "../context/AuthContext";
 import ThemeToggle from "./ThemeToggle";
+
+const getNavLinkIcon = (label) => {
+  switch (label) {
+    case "Dashboard":
+      return <LayoutDashboard size={16} />;
+    case "Study Materials":
+      return <BookOpen size={16} />;
+    case "Password Requests":
+    case "Change Password":
+      return <KeyRound size={16} />;
+    case "Fee Records":
+    case "Payment":
+      return <CreditCard size={16} />;
+    case "Accounts":
+    case "Profile":
+      return <User size={16} />;
+    default:
+      return null;
+  }
+};
 
 const Shell = ({ children, type = "student" }) => {
   const { logout, user } = useAuth();
@@ -31,7 +51,8 @@ const Shell = ({ children, type = "student" }) => {
           <Link to={type === "admin" ? "/admin/dashboard" : "/student/dashboard"}><Brand size="small" /></Link>
           <div className="flex flex-wrap items-center gap-3">
             {links.map(([to, label]) => (
-              <NavLink key={to} to={to} className={({ isActive }) => `rounded-xl px-4 py-2 text-sm font-semibold ${isActive ? "bg-mint text-ink" : "border border-line text-slate-300 hover:text-mint"}`}>
+              <NavLink key={to} to={to} className={({ isActive }) => `rounded-xl px-4 py-2 text-sm font-semibold flex items-center gap-2 transition-all duration-200 ${isActive ? "bg-mint text-ink" : "border border-line text-slate-300 hover:text-mint hover:bg-mint/10"}`}>
+                {getNavLinkIcon(label)}
                 {label}
               </NavLink>
             ))}

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { CreditCard, History, UserRound, BookOpen, X, Mail, ShieldAlert } from "lucide-react";
+import { CreditCard, History, UserRound, BookOpen, X, Mail, ShieldAlert, FileText, FileImage, File } from "lucide-react";
 import toast from "react-hot-toast";
 import Shell from "../components/Shell";
 import StatusBadge from "../components/StatusBadge";
@@ -56,81 +56,90 @@ const StudentDashboard = () => {
 
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <section className="card lg:col-span-2 welcome-card">
-          <p className="text-mint">Student Dashboard</p>
-          <div className="mt-2 flex flex-col gap-4 md:flex-row md:items-center">
-            <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-full border border-mint/50 bg-ink text-2xl font-bold text-mint">
-              {user?.profilePhoto ? <img className="h-full w-full object-cover" src={fileUrl(user.profilePhoto)} alt="Student profile" /> : user?.name?.[0]}
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold">Welcome, {user?.name}</h1>
-              <p className="mt-1 text-slate-400">Tuition ID: <span className="font-semibold text-mint">{user?.tuitionId || "Generated after profile save"}</span></p>
+        <section className="card lg:col-span-2 !p-6 flex flex-col justify-between">
+          <div className="welcome-banner p-6 rounded-2xl border border-line relative overflow-hidden mb-6">
+            <div className="absolute inset-0 opacity-20 pointer-events-none welcome-bg"></div>
+            <div className="relative z-10">
+              <p className="text-xs font-bold uppercase tracking-wider text-mint">Student Dashboard</p>
+              <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-full border border-mint bg-ink text-xl font-bold text-mint flex-shrink-0">
+                  {user?.profilePhoto ? <img className="h-full w-full object-cover" src={fileUrl(user.profilePhoto)} alt="Student profile" /> : user?.name?.[0]}
+                </div>
+                <div>
+                  <h1 className="text-3xl font-black text-white flex items-center gap-2">Welcome, {user?.name} <span className="animate-bounce">👋</span></h1>
+                  <p className="mt-1 text-sm text-slate-400">Tuition ID: <span className="font-semibold text-mint">{user?.tuitionId || "Generated after profile save"}</span></p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-slate-300">Class {user?.class} monthly fee is ready for this billing cycle.</p>
             </div>
           </div>
-          <p className="mt-3 text-slate-400">Class {user?.class} monthly fee is ready for this billing cycle.</p>
           
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-            <div className="rounded-xl border border-line p-5">
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
               <div className="icon-wrapper icon-mint mb-3">
                 <UserRound size={20} />
               </div>
               <p className="text-sm text-slate-400">Student Name</p>
-              <p className="text-lg font-bold truncate">{user?.name}</p>
+              <p className="text-lg font-bold truncate text-white">{user?.name}</p>
             </div>
-            <div className="rounded-xl border border-line p-5">
+            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
               <div className="icon-wrapper icon-lavender mb-3">
                 <BookOpen size={20} />
               </div>
               <p className="text-sm text-slate-400">Class</p>
-              <p className="text-lg font-bold">Class {user?.class}</p>
+              <p className="text-lg font-bold text-white">Class {user?.class}</p>
             </div>
-            <div className="rounded-xl border border-line p-5">
+            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
               <div className="icon-wrapper icon-yellow mb-3">
                 <History size={20} />
               </div>
               <p className="text-sm text-slate-400">Fee Status</p>
               <div className="mt-1"><StatusBadge status={user?.feeStatus} /></div>
             </div>
-            <div className="rounded-xl border border-line p-5">
+            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
               <div className="icon-wrapper icon-coral mb-3">
                 <CreditCard size={20} />
               </div>
               <p className="text-sm text-slate-400">Pending Fees</p>
-              <p className="text-lg font-bold">{formatMoney(user?.feeStatus === "Paid" ? 0 : user?.feeAmount)}</p>
+              <p className="text-lg font-bold text-white">{formatMoney(user?.feeStatus === "Paid" ? 0 : user?.feeAmount)}</p>
             </div>
-            <div className="rounded-xl border border-line p-5">
+            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
               <div className="icon-wrapper icon-blue mb-3">
                 <CreditCard size={20} />
               </div>
               <p className="text-sm text-slate-400">Last Payment</p>
-              <p className="text-lg font-bold truncate">{lastPayment}</p>
+              <p className="text-lg font-bold truncate text-white">{lastPayment}</p>
             </div>
-             <div className="rounded-xl border border-line p-5">
+             <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
               <div className="icon-wrapper icon-green mb-3">
                 <BookOpen size={20} />
               </div>
               <p className="text-sm text-slate-400">Study Materials</p>
-              <p className="text-lg font-bold">{numMaterials}</p>
+              <p className="text-lg font-bold text-white">{numMaterials}</p>
             </div>
-            <div className="rounded-xl border border-line p-5">
+            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
               <div className="icon-wrapper icon-purple mb-3">
                 <Mail size={20} />
               </div>
               <p className="text-sm text-slate-400">Email Address</p>
-              <p className="text-lg font-bold truncate" title={user?.email}>{user?.email || "No Email"}</p>
+              <p className="text-lg font-bold truncate text-white" title={user?.email}>{user?.email || "No Email"}</p>
             </div>
-            <div className="rounded-xl border border-line p-5">
+            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
               <div className="icon-wrapper icon-cyan mb-3">
                 <UserRound size={20} />
               </div>
               <p className="text-sm text-slate-400">Phone Number</p>
-              <p className="text-lg font-bold truncate" title={user?.phone}>{user?.phone || "No Phone"}</p>
+              <p className="text-lg font-bold truncate text-white" title={user?.phone}>{user?.phone || "No Phone"}</p>
             </div>
           </div>
-          <Link to="/payment" className="btn-primary mt-8 inline-block">Submit Payment</Link>
+          <div className="mt-6 flex justify-start">
+            <Link to="/payment" className="btn-primary inline-flex items-center justify-center gap-2 shadow-md hover:translate-y-[-1px] active:translate-y-[0px] !px-6 !py-3">
+              <CreditCard size={18} /> Submit Payment
+            </Link>
+          </div>
         </section>
 
-        <aside className="card flex flex-col justify-between">
+        <aside className="card !p-6 flex flex-col justify-between">
           <div>
             <h2 className="text-xl font-bold text-mint">Recent Study Materials</h2>
             <div className="mt-5 space-y-4">
@@ -139,16 +148,37 @@ const StudentDashboard = () => {
               ) : recentMaterials.length === 0 ? (
                 <p className="text-slate-400 text-sm">No study materials uploaded yet.</p>
               ) : (
-                recentMaterials.map((mat) => (
-                  <div key={mat._id} className="rounded-xl border border-line bg-panelSoft/50 p-4">
-                    <p className="font-semibold text-white truncate">{mat.title}</p>
-                    <p className="text-xs text-slate-400 mt-1">{mat.subject} • {new Date(mat.createdAt).toLocaleDateString()}</p>
-                    <div className="mt-3 flex gap-2">
-                      <Link to={`/student/materials/${mat._id}`} className="text-xs font-bold text-mint hover:underline">View</Link>
-                      <button onClick={() => downloadFile(mat._id, mat.fileName)} className="text-xs font-bold text-slate-400 hover:text-white ml-auto">Download</button>
+                recentMaterials.map((mat) => {
+                  const isPdf = mat.fileName?.toLowerCase().endsWith(".pdf") || mat.fileType?.toLowerCase().includes("pdf");
+                  const isImage = mat.fileType?.toLowerCase().includes("image");
+                  return (
+                    <div key={mat._id} className="rounded-xl border border-line bg-panelSoft/10 p-4 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 mt-0.5">
+                          {isPdf ? (
+                            <FileText className="text-red-500" size={20} />
+                          ) : isImage ? (
+                            <FileImage className="text-mint" size={20} />
+                          ) : (
+                            <File className="text-slate-400" size={20} />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-white truncate text-sm" title={mat.title}>{mat.title}</p>
+                          <p className="text-xs text-slate-400 mt-1">{mat.subject} • {new Date(mat.createdAt).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-3 border-t border-line/30 flex justify-between items-center">
+                        <Link to={`/student/materials/${mat._id}`} className="text-xs font-semibold text-mint hover:underline">
+                          View
+                        </Link>
+                        <button onClick={() => downloadFile(mat._id, mat.fileName)} className="text-xs font-semibold text-mint hover:underline flex items-center gap-1">
+                          Download &darr;
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
