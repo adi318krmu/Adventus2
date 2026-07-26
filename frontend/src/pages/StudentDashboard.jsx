@@ -56,7 +56,7 @@ const StudentDashboard = () => {
 
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <section className="card lg:col-span-2">
+        <section className="card lg:col-span-2 welcome-card">
           <p className="text-mint">Student Dashboard</p>
           <div className="mt-2 flex flex-col gap-4 md:flex-row md:items-center">
             <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-full border border-mint/50 bg-ink text-2xl font-bold text-mint">
@@ -71,43 +71,59 @@ const StudentDashboard = () => {
           
           <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
             <div className="rounded-xl border border-line p-5">
-              <UserRound className="text-mint" />
-              <p className="mt-2 text-sm text-slate-400">Student Name</p>
+              <div className="icon-wrapper icon-mint mb-3">
+                <UserRound size={20} />
+              </div>
+              <p className="text-sm text-slate-400">Student Name</p>
               <p className="text-lg font-bold truncate">{user?.name}</p>
             </div>
             <div className="rounded-xl border border-line p-5">
-              <BookOpen className="text-mint" />
-              <p className="mt-2 text-sm text-slate-400">Class</p>
+              <div className="icon-wrapper icon-lavender mb-3">
+                <BookOpen size={20} />
+              </div>
+              <p className="text-sm text-slate-400">Class</p>
               <p className="text-lg font-bold">Class {user?.class}</p>
             </div>
             <div className="rounded-xl border border-line p-5">
-              <History className="text-mint" />
-              <p className="mt-2 text-sm text-slate-400">Fee Status</p>
+              <div className="icon-wrapper icon-yellow mb-3">
+                <History size={20} />
+              </div>
+              <p className="text-sm text-slate-400">Fee Status</p>
               <div className="mt-1"><StatusBadge status={user?.feeStatus} /></div>
             </div>
             <div className="rounded-xl border border-line p-5">
-              <CreditCard className="text-mint" />
-              <p className="mt-2 text-sm text-slate-400">Pending Fees</p>
+              <div className="icon-wrapper icon-coral mb-3">
+                <CreditCard size={20} />
+              </div>
+              <p className="text-sm text-slate-400">Pending Fees</p>
               <p className="text-lg font-bold">{formatMoney(user?.feeStatus === "Paid" ? 0 : user?.feeAmount)}</p>
             </div>
             <div className="rounded-xl border border-line p-5">
-              <CreditCard className="text-mint" />
-              <p className="mt-2 text-sm text-slate-400">Last Payment</p>
+              <div className="icon-wrapper icon-blue mb-3">
+                <CreditCard size={20} />
+              </div>
+              <p className="text-sm text-slate-400">Last Payment</p>
               <p className="text-lg font-bold truncate">{lastPayment}</p>
             </div>
              <div className="rounded-xl border border-line p-5">
-              <BookOpen className="text-mint" />
-              <p className="mt-2 text-sm text-slate-400">Study Materials</p>
+              <div className="icon-wrapper icon-green mb-3">
+                <BookOpen size={20} />
+              </div>
+              <p className="text-sm text-slate-400">Study Materials</p>
               <p className="text-lg font-bold">{numMaterials}</p>
             </div>
             <div className="rounded-xl border border-line p-5">
-              <Mail className="text-mint" />
-              <p className="mt-2 text-sm text-slate-400">Email Address</p>
+              <div className="icon-wrapper icon-purple mb-3">
+                <Mail size={20} />
+              </div>
+              <p className="text-sm text-slate-400">Email Address</p>
               <p className="text-lg font-bold truncate" title={user?.email}>{user?.email || "No Email"}</p>
             </div>
             <div className="rounded-xl border border-line p-5">
-              <UserRound className="text-mint" />
-              <p className="mt-2 text-sm text-slate-400">Phone Number</p>
+              <div className="icon-wrapper icon-cyan mb-3">
+                <UserRound size={20} />
+              </div>
+              <p className="text-sm text-slate-400">Phone Number</p>
               <p className="text-lg font-bold truncate" title={user?.phone}>{user?.phone || "No Phone"}</p>
             </div>
           </div>

@@ -7,9 +7,22 @@
   background: #0b1111;
 }
 
+/* Custom Icon Wrapper styling */
+.icon-wrapper {
+  display: inline-grid;
+  place-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  background-color: rgba(62, 208, 184, 0.1); /* default dark mode transparent mint */
+  transition: all 0.3s ease;
+}
+.icon-wrapper svg {
+  color: #3ed0b8; /* default dark mode mint */
+}
+
 :root.light {
   color-scheme: light;
-  background: #fffbf4;
+  background: #FFF9F0;
 }
 
 body {
@@ -25,8 +38,8 @@ body {
 :root.light body {
   background:
     radial-gradient(circle at top center, rgba(245, 158, 11, 0.12), transparent 30rem),
-    #fffbf4;
-  color: #2b221a;
+    #FFF9F0;
+  color: #1F2937;
 }
 
 * {
@@ -80,40 +93,111 @@ body {
 }
 
 :root.light .bg-ink {
-  background-color: #fffbf4 !important;
+  background-color: #FFF9F0 !important;
 }
 
 :root.light .bg-panel,
 :root.light .bg-panel\/80,
-:root.light .bg-panel\/85,
-:root.light .bg-ink\/95 {
-  background-color: #ffffff !important;
+:root.light .bg-panel\/85 {
+  background-color: #FFFDF9 !important;
 }
 
-:root.light .bg-panelSoft {
-  background-color: #fff4e0 !important;
+:root.light .bg-ink\/95 {
+  background-color: #FFFCF8 !important;
+}
+
+:root.light .bg-panelSoft,
+:root.light .bg-panelSoft\/50 {
+  background-color: #FFFDF9 !important;
 }
 
 :root.light .text-white {
-  color: #2b221a !important;
+  color: #1F2937 !important;
 }
 
 :root.light .text-slate-300,
 :root.light .text-slate-400 {
-  color: #6e5d50 !important;
+  color: #6B625B !important;
 }
 
 :root.light .text-slate-500 {
-  color: #8c7b6c !important;
+  color: #8C7F75 !important;
 }
 
 :root.light .border-line {
-  border-color: #ebd9c0 !important;
+  border-color: #F0DFC8 !important;
 }
 
 :root.light .input {
   background-color: #ffffff !important;
-  color: #2b221a !important;
+  color: #1F2937 !important;
+  border-color: #F0DFC8 !important;
+}
+
+:root.light .card {
+  box-shadow: 0 4px 18px rgba(120, 90, 50, 0.07) !important;
+}
+
+/* Subtle welcome card background gradient */
+:root.light .welcome-card {
+  background: linear-gradient(135deg, #FFFDF9 0%, #FFF8EC 50%, #F5FFF9 100%) !important;
+}
+
+/* Icon custom light backgrounds (pastels) */
+:root.light .icon-mint {
+  background-color: #e6f7f4 !important;
+}
+:root.light .icon-mint svg {
+  color: #2ECDB1 !important;
+}
+
+:root.light .icon-lavender {
+  background-color: #f3effc !important;
+}
+:root.light .icon-lavender svg {
+  color: #8b5cf6 !important;
+}
+
+:root.light .icon-yellow {
+  background-color: #fef7e0 !important;
+}
+:root.light .icon-yellow svg {
+  color: #f59e0b !important;
+}
+
+:root.light .icon-coral {
+  background-color: #fcece9 !important;
+}
+:root.light .icon-coral svg {
+  color: #ef4444 !important;
+}
+
+:root.light .icon-blue {
+  background-color: #edf5fe !important;
+}
+:root.light .icon-blue svg {
+  color: #3b82f6 !important;
+}
+
+:root.light .icon-green {
+  background-color: #edf7ed !important;
+}
+:root.light .icon-green svg {
+  color: #10b981 !important;
+}
+
+:root.light .icon-purple {
+  background-color: #fdf2fa !important;
+}
+:root.light .icon-purple svg {
+  color: #d946ef !important;
+}
+
+:root.light .icon-cyan {
+  background-color: #e0f7fa !important;
+}
+:root.light .icon-cyan svg {
+  color: #06b6d4 !important;
 }
 
 :root.light .creator-branding {
