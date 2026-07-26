@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import toast from "react-hot-toast";
-import { Check, Download, Pencil, Search, Trash2, X } from "lucide-react";
+import { Check, Download, Pencil, Search, Trash2, X, Mail, ShieldAlert } from "lucide-react";
 import Shell from "../components/Shell";
 import StatusBadge from "../components/StatusBadge";
 import { useAuth } from "../context/AuthContext";
@@ -19,6 +19,103 @@ const AdminDashboard = () => {
   const [filters, setFilters] = useState({ search: "", class: "" });
   const [loading, setLoading] = useState(true);
   const { user, setUser } = useAuth();
+  const [adminEmail, setAdminEmail] = useState(user?.email || "");
+  const [emailLoading, setEmailLoading] = useState(false);
+
+  // Email Verification Modal States
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [verifyStep, setVerifyStep] = useState(1); // 1 = Enter Email, 2 = Enter OTP
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const cooldownTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (user?.email) {
+      setAdminEmail(user.email);
+    }
+  }, [user]);
+
+  // Timer for OTP resend cooldown
+  useEffect(() => {
+    if (cooldown > 0) {
+      cooldownTimerRef.current = setTimeout(() => {
+        setCooldown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+    };
+  }, [cooldown]);
+
+  const saveAdminEmail = async (e) => {
+    e.preventDefault();
+    if (!adminEmail) return toast.error("Please enter a valid email address");
+    setEmailLoading(true);
+    try {
+      const { data } = await api.put("/admin/profile", { email: adminEmail });
+      setUser(data);
+      sessionStorage.setItem("tms_user", JSON.stringify(data));
+      toast.success("Admin email updated successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update email");
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  const handleSendOTP = async (e) => {
+    e.preventDefault();
+    if (!email) return toast.error("Please enter a valid email address");
+    setVerifyLoading(true);
+    try {
+      const { data } = await api.post("/auth/send-email-verification", { email });
+      toast.success(data.message || "Verification code sent successfully");
+      setVerifyStep(2);
+      setCooldown(60);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to send code");
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    if (cooldown > 0) return;
+    setVerifyLoading(true);
+    try {
+      const { data } = await api.post("/auth/resend-email-verification", { email });
+      toast.success(data.message || "OTP resent successfully");
+      setCooldown(60);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to resend code");
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    if (otp.length !== 6 || isNaN(otp)) {
+      return toast.error("Please enter a valid 6-digit OTP code");
+    }
+    setVerifyLoading(true);
+    try {
+      const { data } = await api.post("/auth/verify-email", { email, otp });
+      setUser(data);
+      sessionStorage.setItem("tms_user", JSON.stringify(data));
+      toast.success("Admin email verified successfully!");
+      setShowVerifyModal(false);
+      setVerifyStep(1);
+      setEmail("");
+      setOtp("");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Verification failed");
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
 
   const loadData = async () => {
     const query = new URLSearchParams(filters).toString();
@@ -122,6 +219,26 @@ const AdminDashboard = () => {
 
   return (
     <Shell type="admin">
+      {user?.email && !user?.emailVerified && (
+        <div className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-amber-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h3 className="font-bold text-lg">Admin Email Verification Required</h3>
+            <p className="text-sm text-slate-400 mt-1">
+              Please verify your email address to secure your administrator account.
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              setEmail(user?.email || "");
+              setShowVerifyModal(true);
+            }}
+            className="btn-primary !bg-amber-500 hover:!bg-amber-400 !text-slate-950 !py-2.5 !px-5 whitespace-nowrap self-start md:self-auto font-bold"
+          >
+            Verify Now
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-mint">Admin Dashboard</p>
@@ -140,21 +257,37 @@ const AdminDashboard = () => {
       </section>
 
 
-      <section className="card mt-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+      <section className="card mt-6 grid gap-6 md:grid-cols-2 items-center">
         <div className="flex items-center gap-4">
-          <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-full border border-mint/50 bg-ink text-2xl font-bold text-mint">
+          <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-full border border-mint/50 bg-ink text-2xl font-bold text-mint flex-shrink-0">
             {user?.profilePhoto ? <img className="h-full w-full object-cover" src={fileUrl(user.profilePhoto)} alt="Admin profile" /> : user?.username?.[0]?.toUpperCase()}
           </div>
           <div>
             <p className="text-sm text-slate-400">Admin Tuition ID</p>
             <p className="text-2xl font-bold text-mint">{user?.tuitionId || "Generated after upload"}</p>
-            <p className="mt-1 text-slate-400">@{user?.username}</p>
+            <p className="mt-1 text-slate-400">@{user?.username} {user?.emailVerified && <span className="ml-2 text-xs bg-mint/20 text-mint px-2 py-0.5 rounded-full font-bold">Verified</span>}</p>
           </div>
         </div>
-        <label className="btn-outline cursor-pointer text-center">
-          Upload Profile Photo
-          <input className="hidden" type="file" accept="image/*" onChange={(e) => uploadAdminPhoto(e.target.files[0])} />
-        </label>
+        
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center md:justify-end">
+          <form onSubmit={saveAdminEmail} className="flex gap-2 w-full max-w-md">
+            <input
+              type="email"
+              className="input !py-2.5"
+              placeholder="Admin Email Address"
+              value={adminEmail}
+              onChange={(e) => setAdminEmail(e.target.value)}
+              required
+            />
+            <button disabled={emailLoading} className="btn-primary !py-2.5 whitespace-nowrap">
+              {emailLoading ? "Saving..." : "Save Email"}
+            </button>
+          </form>
+          <label className="btn-outline cursor-pointer text-center !py-2.5 whitespace-nowrap flex-shrink-0">
+            Upload Photo
+            <input className="hidden" type="file" accept="image/*" onChange={(e) => uploadAdminPhoto(e.target.files[0])} />
+          </label>
+        </div>
       </section>
 
       <section className="card mt-6">
@@ -247,6 +380,106 @@ const AdminDashboard = () => {
           </table>
         </div>
       </section>
+
+      {/* Email Verification Modal */}
+      {showVerifyModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm grid place-items-center p-5">
+          <div className="card w-full max-w-md relative">
+            <button
+              onClick={() => {
+                setShowVerifyModal(false);
+                setVerifyStep(1);
+                setOtp("");
+              }}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white"
+            >
+              <X size={20} />
+            </button>
+
+            {verifyStep === 1 ? (
+              <form onSubmit={handleSendOTP}>
+                <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <Mail className="text-mint" /> Email Verification
+                </h3>
+                <p className="text-sm text-slate-400 mt-2">
+                  Please enter your email address. We will send a 6-digit verification code to this address.
+                </p>
+
+                <div className="mt-5 space-y-4">
+                  <input
+                    type="email"
+                    className="input"
+                    placeholder="Email Address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={verifyLoading}
+                  />
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <button type="submit" disabled={verifyLoading} className="btn-primary flex-1">
+                    {verifyLoading ? "Sending..." : "Send Verification OTP"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowVerifyModal(false)}
+                    className="btn-outline flex-1"
+                    disabled={verifyLoading}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOTP}>
+                <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <ShieldAlert className="text-mint" /> Enter Verification Code
+                </h3>
+                <p className="text-sm text-slate-400 mt-2">
+                  A verification code has been sent to <strong className="text-white">{email}</strong>.
+                </p>
+
+                <div className="mt-5 space-y-4">
+                  <input
+                    className="input text-center text-xl tracking-[0.5rem] font-bold font-mono placeholder:text-slate-700"
+                    placeholder="000000"
+                    type="text"
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                    required
+                    disabled={verifyLoading}
+                  />
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <button type="submit" disabled={verifyLoading || otp.length !== 6} className="btn-primary flex-1">
+                    {verifyLoading ? "Verifying..." : "Verify Code"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleResendOTP}
+                    disabled={cooldown > 0 || verifyLoading}
+                    className="btn-outline flex-1 flex items-center justify-center gap-2"
+                  >
+                    {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend OTP"}
+                  </button>
+                </div>
+                
+                <button
+                  type="button"
+                  onClick={() => setVerifyStep(1)}
+                  className="mt-4 text-xs font-semibold text-mint hover:underline block mx-auto"
+                  disabled={verifyLoading}
+                >
+                  Change Email Address
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </Shell>
   );
 };

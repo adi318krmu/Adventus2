@@ -17,11 +17,11 @@ const Signup = () => {
     }
     setLoading(true);
     try {
-      const { data } = await api.post("/auth/send-registration-otp", form);
-      toast.success(data.message || "Verification code sent successfully");
-      navigate("/verify-otp", { state: { registrationForm: form } });
+      const { data } = await api.post("/signup", form);
+      toast.success(data.message || "Account created. Please wait for admin enrollment approval.");
+      navigate("/login");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Signup initialization failed");
+      toast.error(error.response?.data?.message || "Signup failed");
     } finally {
       setLoading(false);
     }

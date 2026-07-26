@@ -39,8 +39,7 @@ router.post(
   [
     body("title").trim().notEmpty().withMessage("Title is required"),
     body("description").optional().trim(),
-    body("subject").trim().notEmpty().withMessage("Subject is required"),
-    body("class").trim().custom(isValidClass).withMessage("Class must be from 4 to 10")
+    body("subject").trim().notEmpty().withMessage("Subject is required")
   ],
   validate,
   async (req, res, next) => {
@@ -49,11 +48,31 @@ router.post(
         return res.status(400).json({ message: "File upload is required" });
       }
 
+      let classes = [];
+      if (Array.isArray(req.body.class)) {
+        classes = req.body.class;
+      } else if (typeof req.body.class === "string") {
+        classes = req.body.class.split(",").map((c) => c.trim()).filter(Boolean);
+      }
+
+      if (classes.length === 0) {
+        if (req.file) fs.unlink(req.file.path, () => {});
+        return res.status(400).json({ message: "At least one target class is required" });
+      }
+
+      // Validate each class
+      for (const cls of classes) {
+        if (!isValidClass(cls)) {
+          if (req.file) fs.unlink(req.file.path, () => {});
+          return res.status(400).json({ message: `Class ${cls} must be from 4 to 10` });
+        }
+      }
+
       const material = await StudyMaterial.create({
         title: req.body.title,
         description: req.body.description || "",
         subject: req.body.subject,
-        class: req.body.class,
+        class: classes,
         fileName: req.file.originalname,
         fileType: req.file.mimetype,
         fileUrl: req.file.path,
@@ -115,7 +134,7 @@ router.get("/:id", protectAny, async (req, res, next) => {
     }
 
     // Verify class restriction for students
-    if (req.role === "student" && material.class !== req.user.class) {
+    if (req.role === "student" && !material.class.includes(req.user.class)) {
       return res.status(403).json({ message: "Access denied to this study material" });
     }
 
@@ -133,8 +152,7 @@ router.put(
   [
     body("title").optional().trim().notEmpty().withMessage("Title cannot be empty"),
     body("description").optional().trim(),
-    body("subject").optional().trim().notEmpty().withMessage("Subject cannot be empty"),
-    body("class").optional().trim().custom(isValidClass).withMessage("Class must be from 4 to 10")
+    body("subject").optional().trim().notEmpty().withMessage("Subject cannot be empty")
   ],
   validate,
   async (req, res, next) => {
@@ -150,7 +168,22 @@ router.put(
       if (req.body.title) material.title = req.body.title;
       if (req.body.description !== undefined) material.description = req.body.description;
       if (req.body.subject) material.subject = req.body.subject;
-      if (req.body.class) material.class = req.body.class;
+      
+      if (req.body.class) {
+        let classes = [];
+        if (Array.isArray(req.body.class)) {
+          classes = req.body.class;
+        } else if (typeof req.body.class === "string") {
+          classes = req.body.class.split(",").map((c) => c.trim()).filter(Boolean);
+        }
+        for (const cls of classes) {
+          if (!isValidClass(cls)) {
+            if (req.file) fs.unlink(req.file.path, () => {});
+            return res.status(400).json({ message: `Class ${cls} must be from 4 to 10` });
+          }
+        }
+        material.class = classes;
+      }
 
       // If a new file is uploaded, swap it and delete the old one
       if (req.file) {

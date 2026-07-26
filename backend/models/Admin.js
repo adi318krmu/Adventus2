@@ -7,7 +7,10 @@ const adminSchema = new mongoose.Schema(
     username: { type: String, required: true, unique: true, trim: true, lowercase: true },
     tuitionId: { type: String, unique: true, sparse: true, index: true },
     password: { type: String, required: true, minlength: 6 },
-    profilePhoto: { type: String, default: "" }
+    profilePhoto: { type: String, default: "" },
+    email: { type: String, trim: true, lowercase: true, unique: true, sparse: true },
+    emailVerified: { type: Boolean, default: false },
+    emailVerifiedAt: { type: Date }
   },
   { timestamps: true }
 );

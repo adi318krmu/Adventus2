@@ -154,7 +154,7 @@ const AdminStudyMaterials = () => {
                     <td>
                       <span className="badge border-mint bg-mint/10 text-mint uppercase tracking-wider">{mat.subject}</span>
                     </td>
-                    <td>Class {mat.class}</td>
+                    <td>Class {Array.isArray(mat.class) ? mat.class.join(", ") : mat.class}</td>
                     <td>
                       <p className="text-sm font-semibold max-w-xs truncate">{mat.fileName}</p>
                       <p className="text-xs text-slate-500">{mat.fileType}</p>

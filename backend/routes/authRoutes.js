@@ -8,7 +8,7 @@ import OTP from "../models/OTP.js";
 import { getFeeForClass, isValidClass } from "../utils.js";
 import { makeTuitionId } from "../idUtils.js";
 import { sendOTPEmail } from "../services/emailService.js";
-import { protectStudent } from "../middleware/auth.js";
+import { protectStudent, protectAdmin } from "../middleware/auth.js";
 
 
 const router = express.Router();
@@ -343,10 +343,10 @@ router.post(
   }
 );
 
-// 4. Send email verification OTP for existing logged-in student
+// 4. Send email verification OTP for existing logged-in admin
 router.post(
   "/auth/send-email-verification",
-  protectStudent,
+  protectAdmin,
   [
     body("email").trim().isEmail().withMessage("Valid email is required")
   ],
@@ -354,10 +354,10 @@ router.post(
   async (req, res, next) => {
     try {
       const { email } = req.body;
-      const studentId = req.user._id;
+      const adminId = req.user._id;
 
-      const emailExists = await Student.findOne({ email: email.toLowerCase(), _id: { $ne: studentId } });
-      if (emailExists) return res.status(409).json({ message: "Email already registered by another account" });
+      const emailExists = await Admin.findOne({ email: email.toLowerCase(), _id: { $ne: adminId } });
+      if (emailExists) return res.status(409).json({ message: "Email already registered by another admin account" });
 
       const existingOTP = await OTP.findOne({ email: email.toLowerCase(), purpose: "email-verification" });
       if (existingOTP) {
@@ -391,10 +391,10 @@ router.post(
   }
 );
 
-// 5. Resend email verification OTP for existing logged-in student
+// 5. Resend email verification OTP for existing logged-in admin
 router.post(
   "/auth/resend-email-verification",
-  protectStudent,
+  protectAdmin,
   [
     body("email").trim().isEmail().withMessage("Valid email is required")
   ],
@@ -402,10 +402,10 @@ router.post(
   async (req, res, next) => {
     try {
       const { email } = req.body;
-      const studentId = req.user._id;
+      const adminId = req.user._id;
 
-      const emailExists = await Student.findOne({ email: email.toLowerCase(), _id: { $ne: studentId } });
-      if (emailExists) return res.status(409).json({ message: "Email already registered by another account" });
+      const emailExists = await Admin.findOne({ email: email.toLowerCase(), _id: { $ne: adminId } });
+      if (emailExists) return res.status(409).json({ message: "Email already registered by another admin account" });
 
       const existingOTP = await OTP.findOne({ email: email.toLowerCase(), purpose: "email-verification" });
       if (existingOTP) {
@@ -439,10 +439,10 @@ router.post(
   }
 );
 
-// 6. Verify email OTP & save email details for existing student
+// 6. Verify email OTP & save email details for existing admin
 router.post(
   "/auth/verify-email",
-  protectStudent,
+  protectAdmin,
   [
     body("email").trim().isEmail().withMessage("Valid email is required"),
     body("otp").trim().isLength({ min: 6, max: 6 }).withMessage("OTP must be 6 digits")
@@ -451,7 +451,7 @@ router.post(
   async (req, res, next) => {
     try {
       const { email, otp } = req.body;
-      const studentId = req.user._id;
+      const adminId = req.user._id;
 
       const otpRecord = await OTP.findOne({ email: email.toLowerCase(), purpose: "email-verification" });
       if (!otpRecord) {
@@ -481,16 +481,16 @@ router.post(
 
       await OTP.deleteOne({ _id: otpRecord._id });
 
-      const emailExists = await Student.findOne({ email: email.toLowerCase(), _id: { $ne: studentId } });
-      if (emailExists) return res.status(409).json({ message: "Email already registered by another account" });
+      const emailExists = await Admin.findOne({ email: email.toLowerCase(), _id: { $ne: adminId } });
+      if (emailExists) return res.status(409).json({ message: "Email already registered by another admin account" });
 
-      const student = await Student.findById(studentId);
-      student.email = email.toLowerCase();
-      student.emailVerified = true;
-      student.emailVerifiedAt = new Date();
-      await student.save();
+      const admin = await Admin.findById(adminId);
+      admin.email = email.toLowerCase();
+      admin.emailVerified = true;
+      admin.emailVerifiedAt = new Date();
+      await admin.save();
 
-      res.json(student.toSafeObject());
+      res.json(admin.toSafeObject());
     } catch (error) {
       next(error);
     }
@@ -498,4 +498,5 @@ router.post(
 );
 
 export default router;
+
 

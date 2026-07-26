@@ -17,7 +17,7 @@ const UploadMaterial = () => {
     title: "",
     description: "",
     subject: "",
-    class: "4",
+    class: ["4"],
     file: null
   });
 
@@ -31,7 +31,7 @@ const UploadMaterial = () => {
             title: data.title,
             description: data.description || "",
             subject: data.subject,
-            class: data.class,
+            class: Array.isArray(data.class) ? data.class : [data.class],
             file: null // Files cannot be prefilled
           });
         })
@@ -60,6 +60,10 @@ const UploadMaterial = () => {
   const submit = async (e) => {
     e.preventDefault();
 
+    if (form.class.length === 0) {
+      return toast.error("Please select at least one class");
+    }
+
     if (!editId && !form.file) {
       return toast.error("Please upload a file");
     }
@@ -70,7 +74,7 @@ const UploadMaterial = () => {
       payload.append("title", form.title);
       payload.append("description", form.description);
       payload.append("subject", form.subject);
-      payload.append("class", form.class);
+      payload.append("class", form.class.join(","));
       if (form.file) payload.append("file", form.file);
 
       if (editId) {
@@ -151,20 +155,55 @@ const UploadMaterial = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">
-                  Target Class
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                  Target Classes
                 </label>
-                <select
-                  className="input"
-                  value={form.class}
-                  onChange={(e) => setForm({ ...form, class: e.target.value })}
-                >
-                  {classes.map((item) => (
-                    <option key={item} value={item}>
-                      Class {item}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex items-center gap-3 mb-3 bg-panelSoft/30 p-2.5 rounded-xl border border-line">
+                  <input
+                    type="checkbox"
+                    id="select-all-classes"
+                    className="w-4 h-4 rounded border-line bg-panel text-mint focus:ring-mint accent-mint cursor-pointer"
+                    checked={form.class.length === classes.length}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setForm({ ...form, class: [...classes] });
+                      } else {
+                        setForm({ ...form, class: [] });
+                      }
+                    }}
+                  />
+                  <label htmlFor="select-all-classes" className="text-sm font-semibold text-slate-200 cursor-pointer select-none">
+                    Select All Classes
+                  </label>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {classes.map((cls) => {
+                    const isChecked = form.class.includes(cls);
+                    return (
+                      <div key={cls} className="flex items-center gap-3 bg-panelSoft/30 p-2.5 rounded-xl border border-line hover:border-mint/50 transition">
+                        <input
+                          type="checkbox"
+                          id={`class-${cls}`}
+                          value={cls}
+                          className="w-4 h-4 rounded border-line bg-panel text-mint focus:ring-mint accent-mint cursor-pointer"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            let updatedClasses = [...form.class];
+                            if (e.target.checked) {
+                              updatedClasses.push(cls);
+                            } else {
+                              updatedClasses = updatedClasses.filter((c) => c !== cls);
+                            }
+                            setForm({ ...form, class: updatedClasses });
+                          }}
+                        />
+                        <label htmlFor={`class-${cls}`} className="text-sm font-semibold text-slate-300 cursor-pointer select-none">
+                          Class {cls}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 

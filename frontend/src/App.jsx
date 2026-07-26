@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import VerifyOtp from "./pages/VerifyOtp";
+
 import StudentDashboard from "./pages/StudentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import FeeManagement from "./pages/FeeManagement";
@@ -26,7 +26,6 @@ const App = () => (
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/verify-otp" element={<VerifyOtp />} />
       <Route element={<ProtectedRoute role="student" />}>
         <Route path="/student/dashboard" element={<StudentDashboard />} />
         <Route path="/payment" element={<PaymentPage />} />

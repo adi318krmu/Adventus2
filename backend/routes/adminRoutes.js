@@ -62,6 +62,18 @@ router.put("/profile", profileUpload.single("profilePhoto"), async (req, res, ne
     if (!admin) return res.status(404).json({ message: "Admin not found" });
     if (!admin.tuitionId) admin.tuitionId = makeTuitionId("admin");
     if (req.file) admin.profilePhoto = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+    
+    if (req.body.email) {
+      const emailLower = req.body.email.toLowerCase().trim();
+      if (emailLower !== admin.email) {
+        const emailExists = await Admin.findOne({ email: emailLower, _id: { $ne: admin._id } });
+        if (emailExists) return res.status(409).json({ message: "Email already registered by another admin account" });
+        admin.email = emailLower;
+        admin.emailVerified = false;
+        admin.emailVerifiedAt = undefined;
+      }
+    }
+
     await admin.save();
     res.json(admin.toSafeObject());
   } catch (error) {

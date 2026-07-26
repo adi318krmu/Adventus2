@@ -20,7 +20,7 @@ const studentSchema = new mongoose.Schema(
     tuitionId: { type: String, unique: true, sparse: true, index: true },
     name: { type: String, required: true, trim: true },
     email: { type: String, trim: true, lowercase: true, unique: true, sparse: true },
-    emailVerified: { type: Boolean, default: false },
+    emailVerified: { type: Boolean, default: true },
     emailVerifiedAt: { type: Date },
     phone: { type: String, trim: true },
     class: { type: String, required: true, trim: true },
