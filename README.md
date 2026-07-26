@@ -314,3 +314,48 @@ npm run dev --prefix frontend
 - Do not commit real `.env` files.
 - Rotate any MongoDB password that was shared publicly.
 - Protect public admin signup before production, for example with an invite code.
+
+## CI/CD Pipeline & Development Workflow
+
+This project implements a professional CI/CD pipeline using **GitHub Actions** for automatic code validation, integrated with native Git-based deployment on **Vercel** and **Render**.
+
+### Pipeline Flow
+
+```text
+Developer ──> Git Push / PR ──> GitHub Actions CI ──> Validation ──> Merge to main ──> Auto Deploy
+                                                         │
+                                                  (Build / Syntax Checks)
+                                                         │
+                                                         └─── Vercel (Frontend)
+                                                         └─── Render (Backend)
+```
+
+### GitHub Actions (Continuous Integration)
+
+The CI pipeline is configured in `.github/workflows/ci.yml` and triggers automatically on:
+- Pull requests targeting `main`
+- Pushes/merges to `main`
+
+It performs parallel validation jobs:
+- **Frontend Validation**: Sets up Node.js 20, caches dependencies, runs `npm ci` (clean install), and runs the production build (`npm run build`) to check for compilation/bundling errors.
+- **Backend Validation**: Sets up Node.js 20, caches dependencies, runs `npm ci` (clean install), and runs a static syntax check on the main entry point (`node --check server.js`).
+
+To view pipeline results:
+1. Navigate to your repository page on GitHub.
+2. Click on the **Actions** tab at the top.
+3. Select the latest workflow run to view step logs and status checks.
+
+### Automatic Deployments (Continuous Deployment)
+
+We utilize the native GitHub integrations of Vercel and Render for deployment to prevent duplicated pipeline steps and token exposure:
+- **Frontend (Vercel)**: Automatically deploys the `main` branch to production and creates preview deployments for PRs when code is pushed.
+- **Backend (Render)**: Automatically fetches changes and redeploys the web service when commits are pushed/merged to the `main` branch.
+
+### Recommended GitHub Repository Settings
+
+To enforce this workflow, we recommend configuring **Branch Protection Rules** on GitHub for the `main` branch:
+1. Go to **Settings** -> **Branches** -> **Add branch protection rule**.
+2. Set the branch name pattern to `main`.
+3. Check **Require a pull request before merging**.
+4. Check **Require status checks to pass before merging** and search for `Frontend CI Validation` and `Backend CI Validation` status checks.
+
