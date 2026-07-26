@@ -28,7 +28,7 @@ const Shell = ({ children, type = "student" }) => {
     <div className="min-h-screen bg-ink text-white">
       <header className="border-b border-line bg-ink/95 px-5 py-5">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 md:flex-row md:items-center md:justify-between">
-          <Link to={type === "admin" ? "/admin/dashboard" : "/student/dashboard"}><Brand /></Link>
+          <Link to={type === "admin" ? "/admin/dashboard" : "/student/dashboard"}><Brand size="small" /></Link>
           <div className="flex flex-wrap items-center gap-3">
             {links.map(([to, label]) => (
               <NavLink key={to} to={to} className={({ isActive }) => `rounded-xl px-4 py-2 text-sm font-semibold ${isActive ? "bg-mint text-ink" : "border border-line text-slate-300 hover:text-mint"}`}>

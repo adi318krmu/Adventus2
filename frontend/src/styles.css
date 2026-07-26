@@ -9,7 +9,7 @@
 
 :root.light {
   color-scheme: light;
-  background: #f4fbfa;
+  background: #fffbf4;
 }
 
 body {
@@ -24,9 +24,9 @@ body {
 
 :root.light body {
   background:
-    radial-gradient(circle at top center, rgba(62, 208, 184, 0.18), transparent 30rem),
-    #f4fbfa;
-  color: #0b1111;
+    radial-gradient(circle at top center, rgba(245, 158, 11, 0.12), transparent 30rem),
+    #fffbf4;
+  color: #2b221a;
 }
 
 * {
@@ -80,7 +80,7 @@ body {
 }
 
 :root.light .bg-ink {
-  background-color: #f4fbfa !important;
+  background-color: #fffbf4 !important;
 }
 
 :root.light .bg-panel,
@@ -91,29 +91,29 @@ body {
 }
 
 :root.light .bg-panelSoft {
-  background-color: #e7f5f2 !important;
+  background-color: #fff4e0 !important;
 }
 
 :root.light .text-white {
-  color: #0b1111 !important;
+  color: #2b221a !important;
 }
 
 :root.light .text-slate-300,
 :root.light .text-slate-400 {
-  color: #506468 !important;
+  color: #6e5d50 !important;
 }
 
 :root.light .text-slate-500 {
-  color: #6b7f83 !important;
+  color: #8c7b6c !important;
 }
 
 :root.light .border-line {
-  border-color: #b8d6d2 !important;
+  border-color: #ebd9c0 !important;
 }
 
 :root.light .input {
   background-color: #ffffff !important;
-  color: #0b1111 !important;
+  color: #2b221a !important;
 }
 
 :root.light .creator-branding {

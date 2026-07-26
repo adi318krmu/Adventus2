@@ -32,9 +32,7 @@ const AdminDashboard = () => {
   const cooldownTimerRef = useRef(null);
 
   useEffect(() => {
-    if (user?.email) {
-      setAdminEmail(user.email);
-    }
+    setAdminEmail(user?.email || "");
   }, [user]);
 
   // Timer for OTP resend cooldown
@@ -219,7 +217,7 @@ const AdminDashboard = () => {
 
   return (
     <Shell type="admin">
-      {user?.email && !user?.emailVerified && (
+      {!user?.emailVerified && (
         <div className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-amber-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h3 className="font-bold text-lg">Admin Email Verification Required</h3>
