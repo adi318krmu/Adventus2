@@ -17,6 +17,7 @@ const Profile = () => {
     phone: user?.phone || "",
     class: user?.class || "4",
     avatarId: user?.avatarId || "avatar-1",
+    companionEnabled: user?.companionEnabled !== false,
     profilePhoto: null
   });
   const [showAvatarModal, setShowAvatarModal] = useState(false);
@@ -63,6 +64,7 @@ const Profile = () => {
       payload.append("phone", form.phone);
       payload.append("class", form.class);
       payload.append("avatarId", form.avatarId);
+      payload.append("companionEnabled", form.companionEnabled);
       if (form.profilePhoto) payload.append("profilePhoto", form.profilePhoto);
 
       const { data } = await api.put("/student/profile", payload, {
@@ -178,6 +180,26 @@ const Profile = () => {
               ))}
             </select>
           </div>
+        </div>
+
+        {/* Companion Setting Toggle */}
+        <div className="mt-5 rounded-2xl border border-line bg-panelSoft/30 p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Sparkles className="text-mint" size={20} />
+            <div>
+              <p className="text-sm font-bold text-white">Interactive Companion</p>
+              <p className="text-xs text-slate-400">Show walking animated avatar at the bottom of the screen</p>
+            </div>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer select-none">
+            <input
+              type="checkbox"
+              className="sr-only peer"
+              checked={form.companionEnabled}
+              onChange={(e) => setForm({ ...form, companionEnabled: e.target.checked })}
+            />
+            <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-mint" />
+          </label>
         </div>
 
         <div className="mt-5 rounded-xl border border-mint/40 bg-mint/10 p-4 text-mint text-sm">

@@ -28,6 +28,7 @@ const studentSchema = new mongoose.Schema(
     isTempPassword: { type: Boolean, default: false },
     profilePhoto: { type: String, default: "" },
     avatarId: { type: String, default: "avatar-1" },
+    companionEnabled: { type: Boolean, default: true },
     accountStatus: {
       type: String,
       enum: ["Pending Enrollment", "Approved", "Rejected"],

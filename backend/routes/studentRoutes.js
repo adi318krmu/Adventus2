@@ -37,6 +37,9 @@ router.put(
       if (req.body.email) student.email = req.body.email.toLowerCase();
       if (req.body.phone) student.phone = req.body.phone;
       if (req.body.avatarId) student.avatarId = req.body.avatarId;
+      if (req.body.companionEnabled !== undefined) {
+        student.companionEnabled = req.body.companionEnabled === "true" || req.body.companionEnabled === true;
+      }
       if (req.body.class) {
         student.class = req.body.class;
         student.feeAmount = getFeeForClass(req.body.class);

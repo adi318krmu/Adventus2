@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { LogOut, LayoutDashboard, BookOpen, KeyRound, CreditCard, User } from "lucide-react";
 import Brand from "./Brand";
 import UserAvatar from "./UserAvatar";
+import CompanionAvatar from "./CompanionAvatar";
 import { useAuth } from "../context/AuthContext";
 import ThemeToggle from "./ThemeToggle";
 
@@ -70,6 +71,7 @@ const Shell = ({ children, type = "student" }) => {
         </div>
       </header>
       <main className="brand-scroll mx-auto max-w-7xl px-5 py-8">{children}</main>
+      {type === "student" && user && <CompanionAvatar />}
     </div>
   );
 };
