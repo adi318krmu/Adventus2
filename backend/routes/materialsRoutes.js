@@ -125,6 +125,17 @@ router.get("/", protectAny, async (req, res, next) => {
   }
 });
 
+const hasStudentAccess = (material, studentClass) => {
+  if (!material || !material.class) return false;
+  const targetClass = String(studentClass || "").trim();
+  if (!targetClass) return false;
+
+  if (Array.isArray(material.class)) {
+    return material.class.some((c) => String(c).trim() === targetClass);
+  }
+  return String(material.class).trim() === targetClass;
+};
+
 // Get Single Study Material
 router.get("/:id", protectAny, async (req, res, next) => {
   try {
@@ -134,7 +145,7 @@ router.get("/:id", protectAny, async (req, res, next) => {
     }
 
     // Verify class restriction for students
-    if (req.role === "student" && !material.class.includes(req.user.class)) {
+    if (req.role === "student" && !hasStudentAccess(material, req.user.class)) {
       return res.status(403).json({ message: "Access denied to this study material" });
     }
 
@@ -238,7 +249,7 @@ router.get("/download/:id", protectAny, async (req, res, next) => {
     }
 
     // Verify class restriction for students
-    if (req.role === "student" && material.class !== req.user.class) {
+    if (req.role === "student" && !hasStudentAccess(material, req.user.class)) {
       return res.status(403).json({ message: "Access denied to this study material" });
     }
 

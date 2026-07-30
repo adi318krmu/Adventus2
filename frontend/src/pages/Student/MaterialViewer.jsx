@@ -112,7 +112,7 @@ const MaterialViewer = () => {
           <div className="border-t border-line pt-4 space-y-3 text-sm text-slate-400">
             <p><span className="text-slate-500">File Name:</span> {material?.fileName}</p>
             <p><span className="text-slate-500">File Type:</span> {material?.fileType}</p>
-            <p><span className="text-slate-500">Class Assigned:</span> Class {material?.class}</p>
+            <p><span className="text-slate-500">Class Assigned:</span> Class {Array.isArray(material?.class) ? material.class.join(", ") : material?.class}</p>
           </div>
         </aside>
       </div>
