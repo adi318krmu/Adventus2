@@ -68,6 +68,16 @@ router.post(
         }
       }
 
+      let fileData = "";
+      if (req.file) {
+        try {
+          const fileBuffer = req.file.buffer ? req.file.buffer : fs.readFileSync(req.file.path);
+          fileData = fileBuffer.toString("base64");
+        } catch (err) {
+          console.error("Error reading file buffer for MongoDB fallback:", err);
+        }
+      }
+
       const material = await StudyMaterial.create({
         title: req.body.title,
         description: req.body.description || "",
@@ -76,6 +86,7 @@ router.post(
         fileName: req.file.originalname,
         fileType: req.file.mimetype,
         fileUrl: req.file.path,
+        fileData,
         uploadedBy: req.user._id
       });
 
@@ -203,6 +214,13 @@ router.put(
         material.fileType = req.file.mimetype;
         material.fileUrl = req.file.path;
 
+        try {
+          const fileBuffer = req.file.buffer ? req.file.buffer : fs.readFileSync(req.file.path);
+          material.fileData = fileBuffer.toString("base64");
+        } catch (err) {
+          console.error("Error reading file buffer for MongoDB fallback:", err);
+        }
+
         if (fs.existsSync(oldPath)) {
           fs.unlink(oldPath, () => {});
         }
@@ -253,11 +271,6 @@ router.get("/download/:id", protectAny, async (req, res, next) => {
       return res.status(403).json({ message: "Access denied to this study material" });
     }
 
-    const filePath = path.resolve(material.fileUrl);
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ message: "Physical file not found on server" });
-    }
-
     if (req.query.download === "true") {
       res.setHeader(
         "Content-Disposition",
@@ -271,7 +284,36 @@ router.get("/download/:id", protectAny, async (req, res, next) => {
     }
 
     res.setHeader("Content-Type", material.fileType);
-    res.sendFile(filePath);
+
+    // 1. Check local physical file path variations
+    const potentialPaths = [
+      path.resolve(material.fileUrl),
+      path.join(process.cwd(), material.fileUrl),
+      path.join(process.cwd(), "study-materials", path.basename(material.fileUrl)),
+      path.join(process.cwd(), "uploads", path.basename(material.fileUrl))
+    ];
+
+    for (const p of potentialPaths) {
+      if (fs.existsSync(p)) {
+        return res.sendFile(p);
+      }
+    }
+
+    // 2. Check Base64 fileData stored in MongoDB (for Render or ephemeral servers)
+    if (material.fileData) {
+      const buffer = Buffer.from(material.fileData, "base64");
+      res.setHeader("Content-Length", buffer.length);
+      return res.end(buffer);
+    }
+
+    // 3. Fallback for external URL
+    if (material.fileUrl && (material.fileUrl.startsWith("http://") || material.fileUrl.startsWith("https://"))) {
+      return res.redirect(material.fileUrl);
+    }
+
+    return res.status(404).json({
+      message: "Physical file not found on server disk. Please ask the teacher or admin to re-upload this file."
+    });
   } catch (error) {
     next(error);
   }

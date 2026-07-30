@@ -26,8 +26,16 @@ const MaterialViewer = () => {
         activeBlobUrl = URL.createObjectURL(blob);
         setBlobUrl(activeBlobUrl);
       })
-      .catch(() => {
-        toast.error("Failed to load study material preview");
+      .catch(async (err) => {
+        let msg = "Failed to load study material preview";
+        if (err?.response?.data instanceof Blob) {
+          try {
+            const text = await err.response.data.text();
+            const parsed = JSON.parse(text);
+            if (parsed?.message) msg = parsed.message;
+          } catch {}
+        }
+        toast.error(msg);
         navigate("/student/materials");
       })
       .finally(() => setLoading(false));
@@ -41,7 +49,6 @@ const MaterialViewer = () => {
 
   const downloadFile = async () => {
     if (!material) return;
-    toast.success("File Download Started");
     try {
       const { data } = await api.get(`/materials/download/${id}?download=true`, { responseType: "blob" });
       const url = window.URL.createObjectURL(new Blob([data]));
@@ -52,8 +59,19 @@ const MaterialViewer = () => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-    } catch {
-      toast.error("Download failed");
+      toast.success("File Download Started");
+    } catch (error) {
+      if (error?.response?.data instanceof Blob) {
+        try {
+          const text = await error.response.data.text();
+          const parsed = JSON.parse(text);
+          if (parsed?.message) {
+            toast.error(parsed.message);
+            return;
+          }
+        } catch {}
+      }
+      toast.error("Download failed. File may no longer exist on server.");
     }
   };
 

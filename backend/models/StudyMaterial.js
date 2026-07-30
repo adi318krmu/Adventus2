@@ -9,6 +9,7 @@ const studyMaterialSchema = new mongoose.Schema(
     fileName: { type: String, required: true, trim: true },
     fileType: { type: String, required: true, trim: true },
     fileUrl: { type: String, required: true, trim: true },
+    fileData: { type: String },
     uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin", required: true }
   },
   { timestamps: true }

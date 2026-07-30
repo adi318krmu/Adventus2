@@ -35,7 +35,6 @@ const StudentStudyMaterials = () => {
   }, [search, subject]);
 
   const downloadFile = async (id, fileName) => {
-    toast.success("File Download Started");
     try {
       const { data } = await api.get(`/materials/download/${id}?download=true`, { responseType: "blob" });
       const url = window.URL.createObjectURL(new Blob([data]));
@@ -46,8 +45,19 @@ const StudentStudyMaterials = () => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
+      toast.success("File Download Started");
     } catch (error) {
-      toast.error("Download failed");
+      if (error?.response?.data instanceof Blob) {
+        try {
+          const text = await error.response.data.text();
+          const parsed = JSON.parse(text);
+          if (parsed?.message) {
+            toast.error(parsed.message);
+            return;
+          }
+        } catch {}
+      }
+      toast.error("Download failed. File may no longer exist on server.");
     }
   };
 
