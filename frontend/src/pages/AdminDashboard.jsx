@@ -4,6 +4,7 @@ import { Check, Download, Pencil, Search, Trash2, X, Mail, ShieldAlert, Crop } f
 import Shell from "../components/Shell";
 import StatusBadge from "../components/StatusBadge";
 import ImageCropperModal from "../components/ImageCropperModal";
+import UserAvatar from "../components/UserAvatar";
 import { useAuth } from "../context/AuthContext";
 import api, { fileUrl } from "../utils/api";
 import { classes, feeByClass, formatMoney } from "../utils/fees";
@@ -330,7 +331,12 @@ const AdminDashboard = () => {
             <tbody>
               {enrollments.map((student) => (
                 <tr key={student._id} className="border-t border-line">
-                  <td className="py-4 font-semibold">{student.name}</td>
+                  <td className="py-4 font-semibold">
+                    <div className="flex items-center gap-3">
+                      <UserAvatar user={student} className="h-8 w-8 text-xs" />
+                      <span>{student.name}</span>
+                    </div>
+                  </td>
                   <td>@{student.username}</td>
                   <td>Class {student.class}</td>
                   <td>{student.tuitionId}</td>

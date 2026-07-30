@@ -52,7 +52,7 @@ router.post(
   validate,
   async (req, res, next) => {
     try {
-      const { username, name, email, phone, password } = req.body;
+      const { username, name, email, phone, password, avatarId } = req.body;
       const studentClass = req.body.class;
       const exists = await Student.findOne({ username: username.toLowerCase() });
       if (exists) return res.status(409).json({ message: "Username already exists" });
@@ -65,6 +65,7 @@ router.post(
         phone,
         class: studentClass,
         password,
+        avatarId: avatarId || "avatar-1",
         accountStatus: "Pending Enrollment",
         accountDisabled: false,
         feeAmount: getFeeForClass(studentClass)
@@ -281,7 +282,7 @@ router.post(
   validate,
   async (req, res, next) => {
     try {
-      const { username, name, email, phone, password, otp } = req.body;
+      const { username, name, email, phone, password, avatarId, otp } = req.body;
       const studentClass = req.body.class;
 
       const otpRecord = await OTP.findOne({ email: email.toLowerCase(), purpose: "registration" });
@@ -326,6 +327,7 @@ router.post(
         phone,
         class: studentClass,
         password,
+        avatarId: avatarId || "avatar-1",
         accountStatus: "Pending Enrollment",
         accountDisabled: false,
         feeAmount: getFeeForClass(studentClass),

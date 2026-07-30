@@ -1,6 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { LogOut, LayoutDashboard, BookOpen, KeyRound, CreditCard, User } from "lucide-react";
 import Brand from "./Brand";
+import UserAvatar from "./UserAvatar";
 import { useAuth } from "../context/AuthContext";
 import ThemeToggle from "./ThemeToggle";
 
@@ -57,6 +58,11 @@ const Shell = ({ children, type = "student" }) => {
               </NavLink>
             ))}
             <ThemeToggle />
+            {user && (
+              <Link to={type === "admin" ? "/admin/dashboard" : "/profile"} title={user?.name || user?.username || "Profile"} className="flex items-center gap-2 rounded-full p-0.5 hover:ring-2 hover:ring-mint/50 transition">
+                <UserAvatar user={user} className="h-9 w-9 text-xs" />
+              </Link>
+            )}
             <button className="btn-outline flex items-center gap-2 !px-3" onClick={() => { logout(); navigate("/"); }}>
               <LogOut size={18} /> Logout
             </button>

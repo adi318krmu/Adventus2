@@ -36,6 +36,7 @@ router.put(
       if (req.body.name) student.name = req.body.name;
       if (req.body.email) student.email = req.body.email.toLowerCase();
       if (req.body.phone) student.phone = req.body.phone;
+      if (req.body.avatarId) student.avatarId = req.body.avatarId;
       if (req.body.class) {
         student.class = req.body.class;
         student.feeAmount = getFeeForClass(req.body.class);

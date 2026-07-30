@@ -4,6 +4,7 @@ import { CreditCard, History, UserRound, BookOpen, X, Mail, ShieldAlert, FileTex
 import toast from "react-hot-toast";
 import Shell from "../components/Shell";
 import StatusBadge from "../components/StatusBadge";
+import UserAvatar from "../components/UserAvatar";
 import { useAuth } from "../context/AuthContext";
 import api, { fileUrl } from "../utils/api";
 import { formatMoney } from "../utils/fees";
@@ -72,9 +73,7 @@ const StudentDashboard = () => {
             <div className="relative z-10">
               <p className="text-xs font-bold uppercase tracking-wider text-mint">Student Dashboard</p>
               <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-full border border-mint bg-ink text-xl font-bold text-mint flex-shrink-0">
-                  {user?.profilePhoto ? <img className="h-full w-full object-cover" src={fileUrl(user.profilePhoto)} alt="Student profile" /> : user?.name?.[0]}
-                </div>
+                <UserAvatar user={user} className="h-16 w-16 text-2xl shadow-glow" />
                 <div>
                   <h1 className="text-3xl font-black text-white flex items-center gap-2">Welcome, {user?.name} <span className="animate-bounce">👋</span></h1>
                   <p className="mt-1 text-sm text-slate-400">Tuition ID: <span className="font-semibold text-mint">{user?.tuitionId || "Generated after profile save"}</span></p>
