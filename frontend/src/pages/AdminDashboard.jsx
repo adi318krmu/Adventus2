@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import toast from "react-hot-toast";
-import { Check, Download, Pencil, Search, Trash2, X, Mail, ShieldAlert } from "lucide-react";
+import { Check, Download, Pencil, Search, Trash2, X, Mail, ShieldAlert, Crop } from "lucide-react";
 import Shell from "../components/Shell";
 import StatusBadge from "../components/StatusBadge";
+import ImageCropperModal from "../components/ImageCropperModal";
 import { useAuth } from "../context/AuthContext";
 import api, { fileUrl } from "../utils/api";
 import { classes, feeByClass, formatMoney } from "../utils/fees";
@@ -27,6 +28,10 @@ const AdminDashboard = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [verifyStep, setVerifyStep] = useState(1); // 1 = Enter Email, 2 = Enter OTP
+
+  // Profile Photo Cropper States
+  const [rawImageSrc, setRawImageSrc] = useState("");
+  const [showCropper, setShowCropper] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const cooldownTimerRef = useRef(null);
@@ -205,14 +210,34 @@ const AdminDashboard = () => {
 
   const pendingCashPayments = payments.filter((payment) => payment.status === "Pending" && payment.paymentMode === "Cash");
 
+  const handleAdminFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setRawImageSrc(reader.result);
+      setShowCropper(true);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
   const uploadAdminPhoto = async (file) => {
     if (!file) return;
-    const payload = new FormData();
-    payload.append("profilePhoto", file);
-    const { data } = await api.put("/admin/profile", payload, { headers: { "Content-Type": "multipart/form-data" } });
-    setUser(data);
-    sessionStorage.setItem("tms_user", JSON.stringify(data));
-    toast.success("Admin profile photo updated");
+    try {
+      const payload = new FormData();
+      payload.append("profilePhoto", file);
+      const { data } = await api.put("/admin/profile", payload, { headers: { "Content-Type": "multipart/form-data" } });
+      setUser(data);
+      sessionStorage.setItem("tms_user", JSON.stringify(data));
+      toast.success("Admin profile photo updated");
+    } catch {
+      toast.error("Failed to update profile photo");
+    }
   };
 
   return (
@@ -281,9 +306,10 @@ const AdminDashboard = () => {
               {emailLoading ? "Saving..." : "Save Email"}
             </button>
           </form>
-          <label className="btn-outline cursor-pointer text-center !py-2.5 whitespace-nowrap flex-shrink-0">
-            Upload Photo
-            <input className="hidden" type="file" accept="image/*" onChange={(e) => uploadAdminPhoto(e.target.files[0])} />
+          <label className="btn-outline cursor-pointer text-center !py-2.5 whitespace-nowrap flex-shrink-0 flex items-center justify-center gap-1.5">
+            <Crop size={16} />
+            <span>Upload & Crop Photo</span>
+            <input className="hidden" type="file" accept="image/*" onChange={handleAdminFileSelect} />
           </label>
         </div>
       </section>
@@ -477,6 +503,17 @@ const AdminDashboard = () => {
             )}
           </div>
         </div>
+      )}
+
+      {showCropper && (
+        <ImageCropperModal
+          imageSrc={rawImageSrc}
+          onCropComplete={async (croppedFile) => {
+            setShowCropper(false);
+            await uploadAdminPhoto(croppedFile);
+          }}
+          onClose={() => setShowCropper(false)}
+        />
       )}
     </Shell>
   );
