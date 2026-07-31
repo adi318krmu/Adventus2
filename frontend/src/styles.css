@@ -138,58 +138,110 @@ body {
   }
 }
 
-/* Light Mode Overrides for Cards & Text */
-:root.light .bg-ink {
-  background-color: #FBF7EE !important;
+/* Light Mode Overrides for Dark Cream Parchment & High Contrast Icons */
+:root.light {
+  background-color: #EFE5CD !important;
+  color: #1C1917 !important;
+}
+
+:root.light body {
+  background-color: #EFE5CD !important;
+  color: #1C1917 !important;
+}
+
+:root.light .bg-ink,
+:root.light .bg-ink\/95,
+:root.light .bg-ink\/90,
+:root.light .bg-ink\/70,
+:root.light .shoji-pattern {
+  background-color: #EFE5CD !important;
 }
 
 :root.light .bg-panel,
 :root.light .bg-panel\/80,
 :root.light .bg-panel\/85,
-:root.light .bg-panel\/90 {
-  background-color: #FFFDF7 !important;
-  border-color: #E5D9C5 !important;
-}
-
-:root.light .bg-ink\/95 {
-  background-color: #F8F2E4 !important;
+:root.light .bg-panel\/90,
+:root.light .bg-stone-950,
+:root.light .bg-stone-900,
+:root.light .bg-stone-800,
+:root.light .bg-stone-950\/90,
+:root.light .bg-stone-950\/80,
+:root.light .bg-stone-900\/80,
+:root.light .bg-stone-950\/60,
+:root.light .bg-stone-900\/60,
+:root.light .bg-stone-950\/40,
+:root.light .bg-stone-900\/40 {
+  background-color: #F8F1E3 !important;
+  border-color: #D5C4A1 !important;
 }
 
 :root.light .bg-panelSoft,
-:root.light .bg-panelSoft\/50 {
-  background-color: #F5EEDD !important;
+:root.light .bg-panelSoft\/50,
+:root.light .bg-panelSoft\/30 {
+  background-color: #E6D9BF !important;
+  border-color: #CBB996 !important;
 }
 
+:root.light .card {
+  background-color: #F8F1E3 !important;
+  box-shadow: 0 6px 24px rgba(130, 100, 40, 0.12) !important;
+  border-color: #D5C4A1 !important;
+}
+
+/* Day Mode Text Visibility */
 :root.light .text-white {
   color: #1C1917 !important;
 }
 
+:root.light .text-stone-100,
+:root.light .text-stone-200,
+:root.light .text-stone-300,
+:root.light .text-stone-400,
 :root.light .text-slate-300,
 :root.light .text-slate-400 {
+  color: #292524 !important;
+}
+
+:root.light .text-stone-500,
+:root.light .text-slate-500 {
   color: #57534E !important;
 }
 
-:root.light .text-slate-500 {
-  color: #78716C !important;
+/* Day Mode Amber / Gold Icon Visibility Overrides */
+:root.light .text-amber-400,
+:root.light .text-amber-300,
+:root.light .text-amber-500,
+:root.light .text-amber-600,
+:root.light .text-mint {
+  color: #854D0E !important;
 }
 
-:root.light .border-line {
-  border-color: #E5D9C5 !important;
+:root.light .bg-amber-500\/10,
+:root.light .bg-amber-500\/20 {
+  background-color: #EFE0C2 !important;
+}
+
+:root.light .border-amber-500\/20,
+:root.light .border-amber-500\/30,
+:root.light .border-amber-500\/40,
+:root.light .border-amber-500\/50,
+:root.light .border-amber-500\/60 {
+  border-color: #C6A664 !important;
 }
 
 :root.light .input {
-  background-color: #FFFFFF !important;
+  background-color: #FAF6ED !important;
   color: #1C1917 !important;
-  border-color: #E5D9C5 !important;
+  border-color: #D5C4A1 !important;
 }
 
 :root.light .input:focus {
-  border-color: #B48F28 !important;
+  border-color: #854D0E !important;
 }
 
-:root.light .card {
-  box-shadow: 0 6px 20px rgba(140, 110, 60, 0.08) !important;
-  border-color: #E5D9C5 !important;
+:root.light option {
+  background-color: #F8F1E3 !important;
+  color: #1C1917 !important;
 }
 
 /* Welcome Banner Scroll styling */
@@ -202,9 +254,9 @@ body {
 
 :root.light .welcome-banner {
   background: 
-    linear-gradient(135deg, #FFFDF7 0%, #F7EFE0 100%) !important;
-  border-color: #D4AF37 !important;
-  box-shadow: 0 8px 24px rgba(180, 140, 50, 0.12) !important;
+    linear-gradient(135deg, #F8F1E3 0%, #EDE0C8 100%) !important;
+  border-color: #C6A664 !important;
+  box-shadow: 0 8px 24px rgba(160, 120, 30, 0.15) !important;
 }
 
 /* Floating Sakura Petals Animations */

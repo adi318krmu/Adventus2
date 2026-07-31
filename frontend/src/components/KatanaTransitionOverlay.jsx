@@ -102,13 +102,22 @@ const KatanaTransitionOverlay = ({ message, onAnimationEnd }) => {
   const [phase, setPhase] = useState(0); 
 
   useEffect(() => {
+    // Stage 1: Swords slide in immediately
     const timer1 = setTimeout(() => setPhase(1), 50);
-    const timer2 = setTimeout(() => setPhase(2), 580);
-    const timer3 = setTimeout(() => setPhase(3), 880);
-    const timer4 = setTimeout(() => setPhase(4), 1600);
+
+    // Stage 2: Swords collision & slash effect at 650ms
+    const timer2 = setTimeout(() => setPhase(2), 650);
+
+    // Stage 3: Text reveal banner at 1000ms
+    const timer3 = setTimeout(() => setPhase(3), 1000);
+
+    // Stage 4: Fade out overlay at 2700ms (held for ~3 seconds total)
+    const timer4 = setTimeout(() => setPhase(4), 2700);
+
+    // Stage 5: Complete & unmount overlay at 3000ms
     const timer5 = setTimeout(() => {
       if (onAnimationEnd) onAnimationEnd();
-    }, 1900);
+    }, 3000);
 
     return () => {
       clearTimeout(timer1);
@@ -136,7 +145,7 @@ const KatanaTransitionOverlay = ({ message, onAnimationEnd }) => {
 
         {/* LEFT KATANA */}
         <div
-          className="absolute top-1/2 left-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-500 ease-out"
+          className="absolute top-1/2 left-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-600 ease-out"
           style={{
             transform:
               phase === 0
@@ -149,7 +158,7 @@ const KatanaTransitionOverlay = ({ message, onAnimationEnd }) => {
 
         {/* RIGHT KATANA */}
         <div
-          className="absolute top-1/2 left-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-500 ease-out"
+          className="absolute top-1/2 left-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-600 ease-out"
           style={{
             transform:
               phase === 0
