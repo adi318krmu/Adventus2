@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
+import { TransitionProvider } from "./context/TransitionContext.jsx";
 import "./styles.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -12,8 +13,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <App />
-          <Toaster position="top-right" toastOptions={{ style: { background: "#162021", color: "#fff", border: "1px solid #24474a" } }} />
+          <TransitionProvider>
+            <App />
+            <Toaster position="top-right" toastOptions={{ style: { background: "#162021", color: "#fff", border: "1px solid #24474a" } }} />
+          </TransitionProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

@@ -10,8 +10,11 @@ import api from "../utils/api";
 import { classes, feeByClass, formatMoney } from "../utils/fees";
 import { Scroll, ArrowRight } from "lucide-react";
 
+import { useTransition } from "../context/TransitionContext";
+
 const Signup = () => {
   const navigate = useNavigate();
+  const { triggerKatanaTransition } = useTransition();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     username: "",
@@ -35,10 +38,12 @@ const Signup = () => {
     try {
       const { data } = await api.post("/signup", form);
       toast.success(data.message || "Account created. Please wait for admin enrollment approval.");
-      navigate("/login");
+      triggerKatanaTransition({
+        message: "Entering Adventus Samurai Academy",
+        onComplete: () => navigate("/login")
+      });
     } catch (error) {
       toast.error(error.response?.data?.message || "Signup failed");
-    } finally {
       setLoading(false);
     }
   };

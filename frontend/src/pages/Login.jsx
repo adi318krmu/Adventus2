@@ -9,9 +9,12 @@ import { useAuth } from "../context/AuthContext";
 import api from "../utils/api";
 import { Shield, KeyRound, ArrowRight } from "lucide-react";
 
+import { useTransition } from "../context/TransitionContext";
+
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { triggerKatanaTransition } = useTransition();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ username: "", password: "", role: "student" });
 
@@ -24,10 +27,13 @@ const Login = () => {
     setLoading(true);
     try {
       const data = await login(form);
-      navigate(data.role === "admin" ? "/admin/dashboard" : "/student/dashboard");
+      const destRoute = data.role === "admin" ? "/admin/dashboard" : "/student/dashboard";
+      triggerKatanaTransition({
+        message: "Welcome, Warrior",
+        onComplete: () => navigate(destRoute)
+      });
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
-    } finally {
       setLoading(false);
     }
   };
