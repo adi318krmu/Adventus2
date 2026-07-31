@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Shell from "../../components/Shell";
+import JapaneseDivider from "../../components/JapaneseDivider";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/api";
+import { KeyRound, ShieldCheck } from "lucide-react";
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -33,12 +35,11 @@ const ChangePassword = () => {
         newPassword: form.newPassword
       });
 
-      // Update local state and storage to clear isTempPassword
       const updatedUser = { ...user, isTempPassword: false };
       setUser(updatedUser);
       sessionStorage.setItem("tms_user", JSON.stringify(updatedUser));
 
-      toast.success("Password Changed");
+      toast.success("Password Updated Successfully");
       navigate("/student/dashboard");
     } catch (error) {
       toast.error(error.response?.data?.message || "Password change failed");
@@ -50,15 +51,22 @@ const ChangePassword = () => {
   return (
     <Shell>
       <div className="grid min-h-[60vh] place-items-center">
-        <form onSubmit={submit} className="card w-full max-w-lg">
-          <h1 className="text-3xl font-bold text-mint">Change Password</h1>
-          <p className="mt-2 text-sm text-slate-400">
-            For security reasons, you must update your password before you can browse the tuition center application.
-          </p>
-
-          <div className="mt-6 space-y-4">
+        <form onSubmit={submit} className="card w-full max-w-lg border-amber-500/40 p-8 shadow-samuraiGold">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-400">
+              <KeyRound size={24} />
+            </div>
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">Temporary Password</label>
+              <h1 className="text-2xl font-black font-display text-white">Update Password Seal</h1>
+              <p className="text-xs text-stone-300">Set your permanent password to unlock full access to the Academy.</p>
+            </div>
+          </div>
+
+          <JapaneseDivider className="my-6" />
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 font-display mb-1.5">Temporary Password</label>
               <input
                 className="input"
                 type="password"
@@ -70,11 +78,11 @@ const ChangePassword = () => {
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">New Password</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 font-display mb-1.5">New Password</label>
               <input
                 className="input"
                 type="password"
-                placeholder="Enter at least 6 characters"
+                placeholder="Minimum 6 characters"
                 value={form.newPassword}
                 onChange={(e) => setForm({ ...form, newPassword: e.target.value })}
                 required
@@ -82,7 +90,7 @@ const ChangePassword = () => {
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">Confirm New Password</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 font-display mb-1.5">Confirm New Password</label>
               <input
                 className="input"
                 type="password"
@@ -94,8 +102,8 @@ const ChangePassword = () => {
             </div>
           </div>
 
-          <button disabled={loading} className="btn-primary mt-6 w-full">
-            {loading ? "Updating Password..." : "Update & Log In"}
+          <button disabled={loading} className="btn-primary mt-6 w-full font-display uppercase tracking-wider text-xs py-3.5 flex items-center justify-center gap-2">
+            <ShieldCheck size={16} /> {loading ? "Updating Password..." : "Save Password & Unlock Dojo"}
           </button>
         </form>
       </div>

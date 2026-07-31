@@ -2,8 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import Brand from "../components/Brand";
+import SakuraPetals from "../components/SakuraPetals";
+import JapaneseDivider from "../components/JapaneseDivider";
+import ThemeToggle from "../components/ThemeToggle";
 import api from "../utils/api";
-import { Mail, Clock, ArrowLeft, ShieldAlert } from "lucide-react";
+import { Mail, Clock, ArrowLeft } from "lucide-react";
 
 const VerifyOtp = () => {
   const location = useLocation();
@@ -72,28 +75,36 @@ const VerifyOtp = () => {
   if (!registrationForm) return null;
 
   return (
-    <div className="grid min-h-screen place-items-center px-5 py-10">
-      <div className="card w-full max-w-lg">
+    <div className="relative min-h-screen grid place-items-center px-5 py-10 bg-ink shoji-pattern text-white transition-colors duration-300">
+      <SakuraPetals />
+
+      <div className="absolute top-5 right-5 z-20">
+        <ThemeToggle />
+      </div>
+
+      <div className="relative z-10 card w-full max-w-lg border-amber-500/40 p-8 shadow-samuraiGold">
         <Brand />
-        <div className="mt-10 flex flex-col items-center text-center">
-          <div className="grid h-16 w-16 place-items-center rounded-full bg-mint/10 border border-mint/30 text-mint mb-5">
-            <Mail size={30} />
+        <JapaneseDivider className="my-6" />
+
+        <div className="flex flex-col items-center text-center">
+          <div className="grid h-16 w-16 place-items-center rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-400 mb-4 shadow-samuraiGold">
+            <Mail size={28} />
           </div>
-          <h1 className="text-3xl font-bold">Email Verification</h1>
-          <p className="text-slate-400 mt-2 max-w-md">
-            We have sent a 6-digit verification code to <span className="font-semibold text-mint">{registrationForm.email}</span>.
+          <h1 className="text-2xl font-black font-display text-white">Verification Seal Required</h1>
+          <p className="text-xs leading-5 text-stone-300 mt-2 max-w-md">
+            Enter the 6-digit verification code sent to <strong className="text-amber-400 font-display">{registrationForm.email}</strong>.
           </p>
         </div>
 
-        <form onSubmit={handleVerify} className="mt-8">
+        <form onSubmit={handleVerify} className="mt-6">
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">
-                Enter 6-Digit OTP
+              <label className="text-xs font-bold uppercase tracking-wider text-amber-400 font-display block mb-1 text-center">
+                6-Digit Security Code
               </label>
               <div className="relative">
                 <input
-                  className="input text-center text-2xl tracking-[0.75rem] font-bold font-mono placeholder:text-slate-700"
+                  className="input text-center text-2xl tracking-[0.75rem] font-bold font-mono placeholder:text-stone-700"
                   placeholder="000000"
                   type="text"
                   maxLength={6}
@@ -103,8 +114,8 @@ const VerifyOtp = () => {
                   disabled={loading}
                 />
               </div>
-              <p className="text-xs text-slate-500 mt-2 text-center">
-                For security reasons, this OTP will expire in 5 minutes.
+              <p className="text-[11px] text-stone-400 mt-2 text-center">
+                This verification code will expire in 5 minutes.
               </p>
             </div>
           </div>
@@ -112,33 +123,33 @@ const VerifyOtp = () => {
           <button
             type="submit"
             disabled={loading || otp.length !== 6}
-            className="btn-primary mt-6 w-full flex items-center justify-center gap-2"
+            className="btn-primary mt-6 w-full font-display uppercase tracking-wider text-xs py-3.5 flex items-center justify-center gap-2"
           >
-            {loading ? "Verifying..." : "Verify & Complete Registration"}
+            {loading ? "Verifying Seal..." : "Verify Code & Complete Enrollment"}
           </button>
         </form>
 
-        <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-line pt-6 sm:flex-row">
+        <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-amber-500/30 pt-6 sm:flex-row">
           <Link
             to="/signup"
-            className="text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-1"
+            className="text-xs font-bold font-display uppercase tracking-wider text-stone-300 hover:text-amber-300 flex items-center gap-1"
           >
-            <ArrowLeft size={16} /> Edit Account Details
+            <ArrowLeft size={15} /> Edit Details
           </Link>
           
           <button
             onClick={handleResend}
             disabled={cooldown > 0 || resendLoading}
-            className="text-sm font-semibold text-mint hover:underline disabled:text-slate-600 disabled:no-underline flex items-center gap-1"
+            className="text-xs font-bold font-display uppercase tracking-wider text-amber-400 hover:underline disabled:text-stone-600 disabled:no-underline flex items-center gap-1"
           >
             {cooldown > 0 ? (
               <>
-                <Clock size={16} className="text-slate-500" /> Resend in {cooldown}s
+                <Clock size={15} className="text-stone-500" /> Resend in {cooldown}s
               </>
             ) : resendLoading ? (
-              "Sending..."
+              "Sending Code..."
             ) : (
-              "Resend OTP"
+              "Resend Code"
             )}
           </button>
         </div>

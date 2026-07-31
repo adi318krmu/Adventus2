@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Upload, File } from "lucide-react";
+import { ArrowLeft, Upload, File, Scroll } from "lucide-react";
 import toast from "react-hot-toast";
 import Shell from "../../components/Shell";
+import JapaneseDivider from "../../components/JapaneseDivider";
 import api from "../../utils/api";
 import { classes } from "../../utils/fees";
 
@@ -32,7 +33,7 @@ const UploadMaterial = () => {
             description: data.description || "",
             subject: data.subject,
             class: Array.isArray(data.class) ? data.class : [data.class],
-            file: null // Files cannot be prefilled
+            file: null
           });
         })
         .catch(() => {
@@ -81,12 +82,12 @@ const UploadMaterial = () => {
         await api.put(`/materials/${editId}`, payload, {
           headers: { "Content-Type": "multipart/form-data" }
         });
-        toast.success("Study Material Updated");
+        toast.success("Study Scroll Updated");
       } else {
         await api.post("/materials", payload, {
           headers: { "Content-Type": "multipart/form-data" }
         });
-        toast.success("Study Material Uploaded");
+        toast.success("Study Scroll Uploaded");
       }
       navigate("/admin/materials");
     } catch (error) {
@@ -98,29 +99,29 @@ const UploadMaterial = () => {
 
   return (
     <Shell type="admin">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 border-b border-amber-500/30 pb-5">
         <button
           onClick={() => navigate("/admin/materials")}
-          className="btn-outline flex items-center gap-2 !py-2 !px-3 text-sm mr-auto md:mr-0"
+          className="btn-outline flex items-center gap-2 !py-2 !px-3.5 text-xs font-display uppercase tracking-wider mr-auto md:mr-0"
         >
-          <ArrowLeft size={16} /> Back
+          <ArrowLeft size={16} /> Return to Archives
         </button>
-        <h1 className="text-3xl font-bold">
-          {editId ? "Edit Study Material" : "Upload Study Material"}
+        <h1 className="text-2xl font-black font-display text-white">
+          {editId ? "Edit Study Scroll" : "Upload New Academic Scroll"}
         </h1>
       </div>
 
-      <div className="card mt-6 max-w-2xl mx-auto">
+      <div className="card mt-6 max-w-2xl mx-auto border-amber-500/40 p-8 shadow-samuraiGold">
         {detailsLoading ? (
-          <p className="text-slate-400 text-center py-10">Loading study material details...</p>
+          <p className="text-stone-400 text-xs text-center py-10">Reading scroll details...</p>
         ) : (
           <form onSubmit={submit} className="space-y-6">
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">
-                Material Title
+              <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 font-display mb-1.5">
+                Scroll Title
               </label>
               <input
-                className="input"
+                className="input text-xs"
                 placeholder="Physics Chapter 1 Notes, Algebra Practice sheet, etc."
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
@@ -129,11 +130,11 @@ const UploadMaterial = () => {
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">
-                Description
+              <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 font-display mb-1.5">
+                Scroll Description / Overview
               </label>
               <textarea
-                className="input min-h-24 py-2"
+                className="input min-h-24 text-xs py-2"
                 placeholder="Write a brief overview of the topics covered in this material..."
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -142,11 +143,11 @@ const UploadMaterial = () => {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">
-                  Subject
+                <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 font-display mb-1.5">
+                  Subject Category
                 </label>
                 <input
-                  className="input"
+                  className="input text-xs"
                   placeholder="Physics, Chemistry, Maths..."
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
@@ -155,14 +156,14 @@ const UploadMaterial = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
-                  Target Classes
+                <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 font-display mb-2">
+                  Class Access Rights
                 </label>
-                <div className="flex items-center gap-3 mb-3 bg-panelSoft/30 p-2.5 rounded-xl border border-line">
+                <div className="flex items-center gap-3 mb-3 bg-stone-950 p-2.5 rounded-xl border border-amber-500/30">
                   <input
                     type="checkbox"
                     id="select-all-classes"
-                    className="w-4 h-4 rounded border-line bg-panel text-mint focus:ring-mint accent-mint cursor-pointer"
+                    className="w-4 h-4 rounded border-amber-500/40 bg-stone-900 text-amber-500 focus:ring-amber-500 accent-amber-500 cursor-pointer"
                     checked={form.class.length === classes.length}
                     onChange={(e) => {
                       if (e.target.checked) {
@@ -172,20 +173,20 @@ const UploadMaterial = () => {
                       }
                     }}
                   />
-                  <label htmlFor="select-all-classes" className="text-sm font-semibold text-slate-200 cursor-pointer select-none">
-                    Select All Classes
+                  <label htmlFor="select-all-classes" className="text-xs font-bold uppercase font-display tracking-wider text-stone-200 cursor-pointer select-none">
+                    Select All Class Ranks
                   </label>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {classes.map((cls) => {
                     const isChecked = form.class.includes(cls);
                     return (
-                      <div key={cls} className="flex items-center gap-3 bg-panelSoft/30 p-2.5 rounded-xl border border-line hover:border-mint/50 transition">
+                      <div key={cls} className="flex items-center gap-2 bg-stone-950 p-2 rounded-xl border border-amber-500/20 hover:border-amber-500/50 transition">
                         <input
                           type="checkbox"
                           id={`class-${cls}`}
                           value={cls}
-                          className="w-4 h-4 rounded border-line bg-panel text-mint focus:ring-mint accent-mint cursor-pointer"
+                          className="w-4 h-4 rounded border-amber-500/40 bg-stone-900 text-amber-500 focus:ring-amber-500 accent-amber-500 cursor-pointer"
                           checked={isChecked}
                           onChange={(e) => {
                             let updatedClasses = [...form.class];
@@ -197,7 +198,7 @@ const UploadMaterial = () => {
                             setForm({ ...form, class: updatedClasses });
                           }}
                         />
-                        <label htmlFor={`class-${cls}`} className="text-sm font-semibold text-slate-300 cursor-pointer select-none">
+                        <label htmlFor={`class-${cls}`} className="text-xs font-bold font-display text-stone-300 cursor-pointer select-none">
                           Class {cls}
                         </label>
                       </div>
@@ -208,10 +209,10 @@ const UploadMaterial = () => {
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 font-display mb-2">
                 File Attachment (PDF, JPG, JPEG, PNG)
               </label>
-              <div className="flex flex-col items-center justify-center border border-dashed border-line hover:border-mint/50 rounded-xl p-8 bg-ink/50 cursor-pointer relative transition">
+              <div className="flex flex-col items-center justify-center border-2 border-dashed border-amber-500/30 hover:border-amber-500/70 rounded-2xl p-8 bg-stone-950 cursor-pointer relative transition">
                 <input
                   type="file"
                   accept=".pdf,image/png,image/jpeg,image/jpg"
@@ -220,27 +221,27 @@ const UploadMaterial = () => {
                 />
                 {form.file ? (
                   <div className="text-center">
-                    <File size={32} className="text-mint mx-auto mb-2" />
-                    <p className="font-semibold text-white text-sm">{form.file.name}</p>
-                    <p className="text-xs text-slate-500 mt-1">{(form.file.size / (1024 * 1024)).toFixed(2)} MB</p>
+                    <File size={32} className="text-amber-400 mx-auto mb-2" />
+                    <p className="font-bold text-white text-xs font-mono">{form.file.name}</p>
+                    <p className="text-[10px] text-stone-400 mt-1 font-mono">{(form.file.size / (1024 * 1024)).toFixed(2)} MB</p>
                   </div>
                 ) : (
                   <div className="text-center">
-                    <Upload size={32} className="text-slate-500 mx-auto mb-2" />
-                    <p className="text-sm font-semibold text-slate-300">Click or Drag & Drop File</p>
-                    <p className="text-xs text-slate-500 mt-1">PDF, JPG, JPEG, PNG up to 10MB</p>
+                    <Upload size={32} className="text-stone-500 mx-auto mb-2" />
+                    <p className="text-xs font-bold font-display uppercase tracking-wider text-stone-200">Click or Drag & Drop File</p>
+                    <p className="text-[11px] text-stone-400 mt-1 font-mono">PDF, JPG, JPEG, PNG up to 10MB</p>
                   </div>
                 )}
               </div>
               {editId && (
-                <p className="text-xs text-slate-500 mt-2">
-                  * Leave empty if you do not want to replace the current file.
+                <p className="text-[11px] text-stone-400 mt-2">
+                  * Leave empty if you do not want to replace the current scroll file.
                 </p>
               )}
             </div>
 
-            <button disabled={loading} className="btn-primary w-full mt-8">
-              {loading ? "Saving material..." : editId ? "Update Study Material" : "Upload Study Material"}
+            <button disabled={loading} className="btn-primary w-full mt-6 font-display uppercase tracking-wider text-xs py-3.5">
+              {loading ? "Saving Scroll Material..." : editId ? "Update Study Scroll" : "Publish Study Scroll"}
             </button>
           </form>
         )}

@@ -4,7 +4,77 @@
 
 :root {
   color-scheme: dark;
-  background: #0b1111;
+  background: #0D1117;
+  --bg-parchment: #0D1117;
+  --bg-card: #161C2A;
+  --border-line: #2A354D;
+  --text-main: #F8FAFC;
+  --accent-gold: #D4AF37;
+  --accent-crimson: #B91C1C;
+  --accent-indigo: #1E1B4B;
+  --accent-bamboo: #15803D;
+}
+
+:root.light {
+  color-scheme: light;
+  background: #FBF7EE;
+  --bg-parchment: #FBF7EE;
+  --bg-card: #FFFDF7;
+  --border-line: #E5D9C5;
+  --text-main: #1C1917;
+  --accent-gold: #B48F28;
+  --accent-crimson: #991B1B;
+  --accent-indigo: #1E1B4B;
+  --accent-bamboo: #15803D;
+}
+
+/* Base Body with Soft Parchment Texture & Radial Glow */
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-parchment);
+  color: var(--text-main);
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 40rem),
+    radial-gradient(circle at 100% 100%, rgba(185, 28, 28, 0.05) 0%, transparent 35rem);
+  background-attachment: fixed;
+}
+
+:root.light body {
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(180, 143, 40, 0.12) 0%, transparent 40rem),
+    radial-gradient(circle at 100% 100%, rgba(153, 27, 27, 0.06) 0%, transparent 35rem),
+    linear-gradient(180deg, #FBF7EE 0%, #F5EFE0 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Shoji Grid Overlay */
+.shoji-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+:root.light .shoji-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(140, 110, 50, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(140, 110, 50, 0.06) 1px, transparent 1px);
+}
+
+/* Custom Scrollbar */
+.brand-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.brand-scroll::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 999px;
 }
 
 /* Custom Icon Wrapper styling */
@@ -13,48 +83,157 @@
   place-items: center;
   padding: 10px;
   border-radius: 12px;
-  background-color: rgba(62, 208, 184, 0.1); /* default dark mode transparent mint */
+  background-color: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.3);
   transition: all 0.3s ease;
 }
 .icon-wrapper svg {
-  color: #3ed0b8; /* default dark mode mint */
+  color: #D4AF37;
 }
 
-:root.light {
-  color-scheme: light;
-  background: #FFF9F0;
+:root.light .icon-wrapper {
+  background-color: rgba(180, 143, 40, 0.12);
+  border-color: rgba(180, 143, 40, 0.3);
+}
+:root.light .icon-wrapper svg {
+  color: #8C6F1B;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at top center, rgba(62, 208, 184, 0.08), transparent 32rem),
-    #0b1111;
-  color: #f8fafc;
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 px-5 py-3 font-semibold text-stone-950 shadow-md transition-all duration-300 hover:brightness-110 hover:shadow-samuraiGold active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-crimson {
+    @apply rounded-xl bg-gradient-to-r from-red-800 via-red-700 to-red-800 px-5 py-3 font-semibold text-white shadow-md transition-all duration-300 hover:brightness-110 hover:shadow-samuraiCrimson active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-indigo {
+    @apply rounded-xl bg-gradient-to-r from-indigo-950 via-indigo-900 to-slate-900 border border-amber-500/40 px-5 py-3 font-semibold text-amber-200 shadow-md transition-all duration-300 hover:border-amber-400 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-outline {
+    @apply rounded-xl border border-amber-500/40 px-5 py-3 font-semibold text-amber-500 transition-all duration-300 hover:border-amber-400 hover:bg-amber-500/10 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  /* Form Input */
+  .input {
+    @apply w-full rounded-xl border border-line bg-panel/80 px-4 py-3 text-white outline-none transition-all duration-300 placeholder:text-slate-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50;
+  }
+
+  /* Samurai Card Frame */
+  .card {
+    @apply rounded-2xl border border-line bg-panel/90 p-6 shadow-samurai backdrop-blur-md transition-all duration-300 relative overflow-hidden;
+  }
+
+  /* Hanko Seal Badge */
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-bold uppercase tracking-wider border transition-all;
+  }
+
+  .badge-hanko {
+    @apply border-red-700/60 bg-red-950/40 text-red-400 shadow-[0_0_10px_rgba(185,28,28,0.2)];
+    font-family: 'Cinzel', serif;
+  }
 }
 
-:root.light body {
-  background:
-    radial-gradient(circle at top center, rgba(245, 158, 11, 0.12), transparent 30rem),
-    #FFF9F0;
-  color: #1F2937;
+/* Light Mode Overrides for Cards & Text */
+:root.light .bg-ink {
+  background-color: #FBF7EE !important;
 }
 
-* {
-  box-sizing: border-box;
+:root.light .bg-panel,
+:root.light .bg-panel\/80,
+:root.light .bg-panel\/85,
+:root.light .bg-panel\/90 {
+  background-color: #FFFDF7 !important;
+  border-color: #E5D9C5 !important;
 }
 
-.brand-scroll::-webkit-scrollbar {
-  width: 6px;
+:root.light .bg-ink\/95 {
+  background-color: #F8F2E4 !important;
 }
 
-.brand-scroll::-webkit-scrollbar-thumb {
-  background: #3ed0b8;
-  border-radius: 999px;
+:root.light .bg-panelSoft,
+:root.light .bg-panelSoft\/50 {
+  background-color: #F5EEDD !important;
 }
 
+:root.light .text-white {
+  color: #1C1917 !important;
+}
+
+:root.light .text-slate-300,
+:root.light .text-slate-400 {
+  color: #57534E !important;
+}
+
+:root.light .text-slate-500 {
+  color: #78716C !important;
+}
+
+:root.light .border-line {
+  border-color: #E5D9C5 !important;
+}
+
+:root.light .input {
+  background-color: #FFFFFF !important;
+  color: #1C1917 !important;
+  border-color: #E5D9C5 !important;
+}
+
+:root.light .input:focus {
+  border-color: #B48F28 !important;
+}
+
+:root.light .card {
+  box-shadow: 0 6px 20px rgba(140, 110, 60, 0.08) !important;
+  border-color: #E5D9C5 !important;
+}
+
+/* Welcome Banner Scroll styling */
+.welcome-banner {
+  background: 
+    linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(22, 28, 42, 0.98) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+:root.light .welcome-banner {
+  background: 
+    linear-gradient(135deg, #FFFDF7 0%, #F7EFE0 100%) !important;
+  border-color: #D4AF37 !important;
+  box-shadow: 0 8px 24px rgba(180, 140, 50, 0.12) !important;
+}
+
+/* Floating Sakura Petals Animations */
+@keyframes floatPetal {
+  0% {
+    transform: translateY(-10vh) rotate(0deg) translateX(0px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(105vh) rotate(360deg) translateX(80px);
+    opacity: 0;
+  }
+}
+
+.sakura-petal {
+  position: fixed;
+  top: -20px;
+  pointer-events: none;
+  z-index: 10;
+  animation: floatPetal linear infinite;
+}
+
+/* Creator Branding */
 .creator-branding {
   animation: creatorFade 900ms ease-out both;
 }
@@ -70,166 +249,3 @@ body {
   }
 }
 
-@layer components {
-  .btn-primary {
-    @apply rounded-xl bg-mint px-5 py-3 font-semibold text-ink transition hover:bg-[#5ce0cb] disabled:cursor-not-allowed disabled:opacity-60;
-  }
-
-  .btn-outline {
-    @apply rounded-xl border border-line px-5 py-3 font-semibold text-mint transition hover:border-mint hover:bg-mint/10 disabled:cursor-not-allowed disabled:opacity-60;
-  }
-
-  .input {
-    @apply w-full rounded-xl border border-line bg-panel/80 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-mint;
-  }
-
-  .card {
-    @apply rounded-2xl border border-line bg-panel/85 p-6 shadow-glow;
-  }
-
-  .badge {
-    @apply rounded-full border px-3 py-1 text-xs font-semibold;
-  }
-}
-
-:root.light .bg-ink {
-  background-color: #FFF9F0 !important;
-}
-
-:root.light .bg-panel,
-:root.light .bg-panel\/80,
-:root.light .bg-panel\/85 {
-  background-color: #FFFDF9 !important;
-}
-
-:root.light .bg-ink\/95 {
-  background-color: #FFFCF8 !important;
-}
-
-:root.light .bg-panelSoft,
-:root.light .bg-panelSoft\/50 {
-  background-color: #FFFDF9 !important;
-}
-
-:root.light .text-white {
-  color: #1F2937 !important;
-}
-
-:root.light .text-slate-300,
-:root.light .text-slate-400 {
-  color: #6B625B !important;
-}
-
-:root.light .text-slate-500 {
-  color: #8C7F75 !important;
-}
-
-:root.light .border-line {
-  border-color: #F0DFC8 !important;
-}
-
-:root.light .input {
-  background-color: #ffffff !important;
-  color: #1F2937 !important;
-  border-color: #F0DFC8 !important;
-}
-
-:root.light .card {
-  box-shadow: 0 4px 18px rgba(120, 90, 50, 0.07) !important;
-}
-
-/* Subtle welcome card background gradient */
-:root.light .welcome-banner {
-  background: 
-    radial-gradient(circle at -20% -20%, rgba(245, 158, 11, 0.07) 35%, transparent 35%),
-    radial-gradient(circle at 120% 120%, rgba(16, 185, 129, 0.05) 45%, transparent 45%),
-    linear-gradient(135deg, #FFFDF9 0%, #FFF8ED 50%, #FFFCF7 100%) !important;
-  box-shadow: 0 4px 18px rgba(120, 90, 50, 0.04) !important;
-  border-color: #F0DFC8 !important;
-}
-
-:root.light .welcome-banner .welcome-bg {
-  background-image: 
-    radial-gradient(circle, rgba(239, 68, 68, 0.03) 2px, transparent 2px),
-    radial-gradient(circle, rgba(16, 185, 129, 0.03) 3px, transparent 3px),
-    radial-gradient(circle, rgba(245, 158, 11, 0.04) 1.5px, transparent 1.5px);
-  background-size: 40px 40px, 60px 60px, 30px 30px;
-  background-position: 0 0, 20px 20px, 10px 10px;
-}
-
-/* Micro-interactions & animations */
-.card, .welcome-banner, .icon-wrapper, .btn-primary, .btn-outline, a, button {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-:root.light .card:hover, :root.light .welcome-banner:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(120, 90, 50, 0.1) !important;
-}
-
-:root.light .card div.rounded-xl:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(120, 90, 50, 0.06) !important;
-  border-color: #2ECDB1 !important;
-}
-
-/* Icon custom light backgrounds (pastels) */
-:root.light .icon-mint {
-  background-color: #e6f7f4 !important;
-}
-:root.light .icon-mint svg {
-  color: #2ECDB1 !important;
-}
-
-:root.light .icon-lavender {
-  background-color: #f3effc !important;
-}
-:root.light .icon-lavender svg {
-  color: #8b5cf6 !important;
-}
-
-:root.light .icon-yellow {
-  background-color: #fef7e0 !important;
-}
-:root.light .icon-yellow svg {
-  color: #f59e0b !important;
-}
-
-:root.light .icon-coral {
-  background-color: #fcece9 !important;
-}
-:root.light .icon-coral svg {
-  color: #ef4444 !important;
-}
-
-:root.light .icon-blue {
-  background-color: #edf5fe !important;
-}
-:root.light .icon-blue svg {
-  color: #3b82f6 !important;
-}
-
-:root.light .icon-green {
-  background-color: #edf7ed !important;
-}
-:root.light .icon-green svg {
-  color: #10b981 !important;
-}
-
-:root.light .icon-purple {
-  background-color: #fdf2fa !important;
-}
-:root.light .icon-purple svg {
-  color: #d946ef !important;
-}
-
-:root.light .icon-cyan {
-  background-color: #e0f7fa !important;
-}
-:root.light .icon-cyan svg {
-  color: #06b6d4 !important;
-}
-
-:root.light .creator-branding {
-  background-color: rgba(255, 255, 255, 0.74) !important;
-}

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Download, BookOpen } from "lucide-react";
+import { ArrowLeft, Download, Scroll, BookOpen } from "lucide-react";
 import toast from "react-hot-toast";
 import Shell from "../../components/Shell";
+import JapaneseDivider from "../../components/JapaneseDivider";
 import api from "../../utils/api";
 
 const MaterialViewer = () => {
@@ -59,7 +60,7 @@ const MaterialViewer = () => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      toast.success("File Download Started");
+      toast.success("Scroll file download started");
     } catch (error) {
       if (error?.response?.data instanceof Blob) {
         try {
@@ -80,57 +81,63 @@ const MaterialViewer = () => {
 
   return (
     <Shell>
-      <div className="flex flex-col gap-4 md:flex-row md:items-center">
-        <Link to="/student/materials" className="btn-outline flex items-center gap-2 !py-2 !px-3 text-sm mr-auto md:mr-0">
-          <ArrowLeft size={16} /> Back
+      <div className="flex flex-col gap-4 md:flex-row md:items-center border-b border-amber-500/30 pb-5">
+        <Link to="/student/materials" className="btn-outline flex items-center gap-2 !py-2 !px-3.5 text-xs font-display uppercase tracking-wider mr-auto md:mr-0">
+          <ArrowLeft size={16} /> Return to Archives
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold truncate max-w-xl">{material?.title || "Loading Preview..."}</h1>
-          <p className="text-xs text-slate-400 mt-1">
-            {material?.subject} • Uploaded on {material && new Date(material.createdAt).toLocaleDateString()}
+        <div className="flex-1 min-w-0">
+          <h1 className="text-2xl font-black font-display text-white truncate">{material?.title || "Reading Academic Scroll..."}</h1>
+          <p className="text-xs text-stone-400 mt-0.5">
+            Subject: <strong className="text-amber-400 font-display">{material?.subject}</strong> • Uploaded on {material && new Date(material.createdAt).toLocaleDateString()}
           </p>
         </div>
-        <button onClick={downloadFile} className="btn-primary flex items-center gap-2 !py-2 !px-4 text-sm ml-auto">
-          <Download size={16} /> Download File
+        <button onClick={downloadFile} className="btn-primary flex items-center gap-2 !py-2.5 !px-4 text-xs font-display uppercase tracking-wider ml-auto">
+          <Download size={16} /> Download Scroll File
         </button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_0.4fr] mt-6">
-        <section className="card flex items-center justify-center min-h-[500px]">
+      <div className="grid gap-6 lg:grid-cols-[1fr_0.38fr] mt-6">
+        <section className="card border-amber-500/40 p-4 flex items-center justify-center min-h-[520px] shadow-samuraiGold">
           {loading ? (
-            <p className="text-slate-400">Loading document viewer...</p>
+            <p className="text-stone-400 text-xs py-8">Unrolling scroll preview...</p>
           ) : isImage ? (
             <img
               src={blobUrl}
               alt={material.title}
-              className="max-w-full max-h-[70vh] rounded-xl object-contain border border-line shadow-glow"
+              className="max-w-full max-h-[70vh] rounded-xl object-contain border border-amber-500/40 shadow-samuraiGold"
             />
           ) : isPdf ? (
             <iframe
               src={blobUrl}
               title={material.title}
-              className="w-full h-[70vh] rounded-xl border border-line bg-panelSoft"
+              className="w-full h-[70vh] rounded-xl border border-amber-500/40 bg-stone-950"
             />
           ) : (
-            <div className="text-center">
-              <BookOpen size={48} className="text-slate-500 mx-auto" />
-              <p className="text-slate-400 mt-3">Preview not supported for this file format.</p>
-              <button onClick={downloadFile} className="btn-outline mt-4 inline-block">Download to view</button>
+            <div className="text-center p-8">
+              <Scroll size={48} className="text-amber-400/80 mx-auto" />
+              <p className="text-stone-300 font-display text-sm mt-3">Direct preview is restricted for this file format.</p>
+              <button onClick={downloadFile} className="btn-primary mt-4 inline-flex items-center gap-2 text-xs font-display uppercase tracking-wider py-2.5 px-5">
+                <Download size={15} /> Download to View Document
+              </button>
             </div>
           )}
         </section>
 
-        <aside className="card flex flex-col gap-5 h-fit">
+        <aside className="card border-amber-500/30 p-6 flex flex-col gap-5 h-fit shadow-samurai">
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-mint">File Description</h3>
-            <p className="text-slate-300 mt-3 text-sm leading-relaxed whitespace-pre-line">
-              {material?.description || "No description provided for this material."}
+            <h3 className="text-xs font-bold uppercase tracking-widest text-amber-400 font-display flex items-center gap-1.5">
+              <BookOpen size={14} /> Scroll Metadata
+            </h3>
+            <JapaneseDivider className="my-3" />
+            <p className="text-stone-200 text-xs leading-relaxed whitespace-pre-line">
+              {material?.description || "No description provided for this scroll."}
             </p>
           </div>
-          <div className="border-t border-line pt-4 space-y-3 text-sm text-slate-400">
-            <p><span className="text-slate-500">File Name:</span> {material?.fileName}</p>
-            <p><span className="text-slate-500">File Type:</span> {material?.fileType}</p>
-            <p><span className="text-slate-500">Class Assigned:</span> Class {Array.isArray(material?.class) ? material.class.join(", ") : material?.class}</p>
+
+          <div className="border-t border-amber-500/20 pt-4 space-y-2.5 text-xs text-stone-300 font-mono">
+            <p><span className="text-stone-400 font-display uppercase font-bold text-[11px]">File:</span> {material?.fileName}</p>
+            <p><span className="text-stone-400 font-display uppercase font-bold text-[11px]">Type:</span> {material?.fileType}</p>
+            <p><span className="text-stone-400 font-display uppercase font-bold text-[11px]">Class Access:</span> Class {Array.isArray(material?.class) ? material.class.join(", ") : material?.class}</p>
           </div>
         </aside>
       </div>

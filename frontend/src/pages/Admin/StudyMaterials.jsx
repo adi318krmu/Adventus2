@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, Plus, Trash2, Edit, Download } from "lucide-react";
+import { Search, Plus, Trash2, Edit, Download, Scroll } from "lucide-react";
 import toast from "react-hot-toast";
 import Shell from "../../components/Shell";
+import JapaneseDivider from "../../components/JapaneseDivider";
 import api from "../../utils/api";
 import { classes } from "../../utils/fees";
 
@@ -24,7 +25,6 @@ const AdminStudyMaterials = () => {
       const { data } = await api.get(`/materials?${query}`);
       setMaterials(data);
 
-      // Collect list of unique subjects
       const allSubjects = await api.get("/materials");
       const uniqueSubjects = [...new Set(allSubjects.data.map((m) => m.subject))];
       setSubjects(uniqueSubjects);
@@ -40,10 +40,10 @@ const AdminStudyMaterials = () => {
   }, [search, subject, studentClass]);
 
   const deleteMaterial = async (id) => {
-    if (!confirm("Are you sure you want to delete this study material?")) return;
+    if (!confirm("Are you sure you want to delete this scroll material?")) return;
     try {
       await api.delete(`/materials/${id}`);
-      toast.success("Study Material Deleted");
+      toast.success("Scroll material removed");
       loadMaterials();
     } catch {
       toast.error("Failed to delete study material");
@@ -61,7 +61,7 @@ const AdminStudyMaterials = () => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      toast.success("File Download Started");
+      toast.success("Scroll file download started");
     } catch (error) {
       if (error?.response?.data instanceof Blob) {
         try {
@@ -79,48 +79,49 @@ const AdminStudyMaterials = () => {
 
   return (
     <Shell type="admin">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-amber-500/30 pb-5">
         <div>
-          <p className="text-mint">Admin Console</p>
-          <h1 className="text-4xl font-bold">Study Materials</h1>
-          <p className="mt-1 text-slate-400">Upload and manage academic study documents, PDFs, and guides.</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-amber-400 font-display flex items-center gap-1.5">
+            <Scroll size={14} /> Academy Scrolls Repository
+          </p>
+          <h1 className="mt-1 text-3xl font-black font-display text-white">Study Materials Control</h1>
         </div>
-        <Link to="/admin/materials/upload" className="btn-primary flex items-center gap-2">
-          <Plus size={18} /> Upload Material
+        <Link to="/admin/materials/upload" className="btn-primary flex items-center gap-2 text-xs font-display uppercase tracking-wider !py-2.5 !px-4">
+          <Plus size={16} /> Upload New Scroll
         </Link>
       </div>
 
-      <div className="card mt-6">
+      <div className="card mt-6 border-amber-500/30 p-5 shadow-samuraiGold">
         <div className="flex flex-col gap-4 md:flex-row">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-3.5 text-slate-500" size={18} />
+            <Search className="absolute left-3 top-3 text-stone-500" size={16} />
             <input
-              className="input pl-10"
-              placeholder="Search by title or description..."
+              className="input pl-9 text-xs"
+              placeholder="Search scrolls by title or subject..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <select
-            className="input md:w-44"
+            className="input text-xs md:w-44"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
           >
-            <option value="">All Subjects</option>
+            <option value="" className="bg-stone-900">All Subjects</option>
             {subjects.map((sub) => (
-              <option key={sub} value={sub}>
+              <option key={sub} value={sub} className="bg-stone-900">
                 {sub}
               </option>
             ))}
           </select>
           <select
-            className="input md:w-44"
+            className="input text-xs md:w-44"
             value={studentClass}
             onChange={(e) => setStudentClass(e.target.value)}
           >
-            <option value="">All Classes</option>
+            <option value="" className="bg-stone-900">All Class Ranks</option>
             {classes.map((cls) => (
-              <option key={cls} value={cls}>
+              <option key={cls} value={cls} className="bg-stone-900">
                 Class {cls}
               </option>
             ))}
@@ -128,70 +129,71 @@ const AdminStudyMaterials = () => {
         </div>
       </div>
 
-      <div className="card mt-6">
+      <section className="card mt-6 border-amber-500/30 p-6 shadow-samuraiGold">
+        <JapaneseDivider className="mb-6" />
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left">
-            <thead className="text-sm text-slate-400">
+          <table className="w-full min-w-[900px] text-left text-xs">
+            <thead className="font-display uppercase tracking-wider text-amber-400/90 border-b border-amber-500/30">
               <tr>
-                <th className="py-3">Title</th>
-                <th>Subject</th>
-                <th>Class</th>
-                <th>File Details</th>
-                <th>Upload Date</th>
-                <th>Action</th>
+                <th className="py-3 px-4">Scroll Title</th>
+                <th className="px-4">Subject</th>
+                <th className="px-4">Class Rank</th>
+                <th className="px-4">File Details</th>
+                <th className="px-4">Archive Date</th>
+                <th className="px-4">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-5 text-slate-400">
-                    Loading materials...
+                  <td colSpan={6} className="py-6 text-center text-stone-400">
+                    Loading scroll repository...
                   </td>
                 </tr>
               ) : materials.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-5 text-slate-400">
-                    No study materials found.
+                  <td colSpan={6} className="py-6 text-center text-stone-400">
+                    No study materials found in archives.
                   </td>
                 </tr>
               ) : (
                 materials.map((mat) => (
-                  <tr key={mat._id} className="border-t border-line">
-                    <td className="py-4">
-                      <p className="font-semibold text-white">{mat.title}</p>
-                      <p className="text-xs text-slate-400 max-w-sm truncate">{mat.description || "No description"}</p>
+                  <tr key={mat._id} className="border-t border-amber-500/10 hover:bg-amber-500/5 transition">
+                    <td className="py-3.5 px-4">
+                      <p className="font-bold text-white text-xs">{mat.title}</p>
+                      <p className="text-[11px] text-stone-400 max-w-sm truncate">{mat.description || "No description provided."}</p>
                     </td>
-                    <td>
-                      <span className="badge border-mint bg-mint/10 text-mint uppercase tracking-wider">{mat.subject}</span>
+                    <td className="px-4">
+                      <span className="badge border-amber-500/50 bg-amber-500/10 text-amber-400 font-display text-[10px] tracking-widest">{mat.subject}</span>
                     </td>
-                    <td>Class {Array.isArray(mat.class) ? mat.class.join(", ") : mat.class}</td>
-                    <td>
-                      <p className="text-sm font-semibold max-w-xs truncate">{mat.fileName}</p>
-                      <p className="text-xs text-slate-500">{mat.fileType}</p>
+                    <td className="px-4 font-bold font-display text-amber-400">Class {Array.isArray(mat.class) ? mat.class.join(", ") : mat.class}</td>
+                    <td className="px-4">
+                      <p className="font-mono text-stone-300 max-w-xs truncate">{mat.fileName}</p>
+                      <p className="text-[10px] text-stone-500 font-mono">{mat.fileType}</p>
                     </td>
-                    <td>{new Date(mat.createdAt).toLocaleDateString()}</td>
-                    <td>
+                    <td className="px-4 text-stone-300">{new Date(mat.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4">
                       <div className="flex gap-2">
                         <Link
                           to={`/admin/materials/upload?editId=${mat._id}`}
-                          className="btn-outline !py-2 !px-3"
-                          title="Edit Material"
+                          className="btn-outline !p-2"
+                          title="Edit Scroll"
                         >
-                          <Edit size={16} />
+                          <Edit size={14} />
                         </Link>
                         <button
                           onClick={() => downloadFile(mat._id, mat.fileName)}
-                          className="btn-outline !py-2 !px-3"
+                          className="btn-outline !p-2"
                           title="Download File"
                         >
-                          <Download size={16} />
+                          <Download size={14} />
                         </button>
                         <button
                           onClick={() => deleteMaterial(mat._id)}
-                          className="btn-outline !py-2 !px-3 hover:!border-rose-500 hover:!bg-rose-500/10 hover:!text-rose-500"
-                          title="Delete Material"
+                          className="rounded-xl border border-red-700/60 bg-red-950/40 p-2 text-red-300 hover:bg-red-900/60"
+                          title="Delete Scroll"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </td>
@@ -201,7 +203,7 @@ const AdminStudyMaterials = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
     </Shell>
   );
 };

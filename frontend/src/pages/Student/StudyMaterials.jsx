@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, BookOpen, Download, Eye } from "lucide-react";
+import { Search, Scroll, Download, Eye, BookOpen } from "lucide-react";
 import toast from "react-hot-toast";
 import Shell from "../../components/Shell";
+import JapaneseDivider from "../../components/JapaneseDivider";
 import api from "../../utils/api";
 
 const StudentStudyMaterials = () => {
@@ -18,7 +19,6 @@ const StudentStudyMaterials = () => {
       const { data } = await api.get(`/materials?${query}`);
       setMaterials(data);
 
-      // Collect list of unique subjects
       if (subjects.length === 0) {
         const uniqueSubjects = [...new Set(data.map((m) => m.subject))];
         setSubjects(uniqueSubjects);
@@ -45,7 +45,7 @@ const StudentStudyMaterials = () => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      toast.success("File Download Started");
+      toast.success("Scroll file download started");
     } catch (error) {
       if (error?.response?.data instanceof Blob) {
         try {
@@ -63,33 +63,34 @@ const StudentStudyMaterials = () => {
 
   return (
     <Shell>
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-amber-500/30 pb-5">
         <div>
-          <p className="text-mint">Student Hub</p>
-          <h1 className="text-4xl font-bold">Study Materials</h1>
-          <p className="mt-1 text-slate-400">Access academic files and reading notes assigned to your class.</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-amber-400 font-display flex items-center gap-1.5">
+            <Scroll size={14} /> Academy Archive
+          </p>
+          <h1 className="mt-1 text-3xl font-black font-display text-white">Scrolls of Wisdom</h1>
         </div>
       </div>
 
-      <div className="card mt-6">
+      <div className="card mt-6 border-amber-500/30 p-5 shadow-samuraiGold">
         <div className="flex flex-col gap-4 md:flex-row">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-3.5 text-slate-500" size={18} />
+            <Search className="absolute left-3 top-3 text-stone-500" size={16} />
             <input
-              className="input pl-10"
-              placeholder="Search by title or description..."
+              className="input pl-9 text-xs"
+              placeholder="Search scrolls by title or subject..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <select
-            className="input md:w-56"
+            className="input text-xs md:w-56"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
           >
-            <option value="">All Subjects</option>
+            <option value="" className="bg-stone-900">All Academic Subjects</option>
             {subjects.map((sub) => (
-              <option key={sub} value={sub}>
+              <option key={sub} value={sub} className="bg-stone-900">
                 {sub}
               </option>
             ))}
@@ -99,34 +100,34 @@ const StudentStudyMaterials = () => {
 
       <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {loading ? (
-          <p className="text-slate-400">Loading study materials...</p>
+          <p className="text-stone-400 text-xs py-8 col-span-full text-center">Unrolling academic scroll repository...</p>
         ) : materials.length === 0 ? (
-          <p className="text-slate-400">No study materials found.</p>
+          <p className="text-stone-400 text-xs py-8 col-span-full text-center">No study materials found in archives.</p>
         ) : (
           materials.map((mat) => (
-            <div key={mat._id} className="card flex flex-col justify-between">
+            <div key={mat._id} className="card border-amber-500/30 p-6 shadow-samuraiGold flex flex-col justify-between hover:border-amber-500/60 transition">
               <div>
                 <div className="flex items-start justify-between gap-3">
-                  <span className="badge border-mint bg-mint/10 text-mint uppercase tracking-wider">{mat.subject}</span>
-                  <span className="text-xs text-slate-500">{new Date(mat.createdAt).toLocaleDateString()}</span>
+                  <span className="badge border-amber-500/50 bg-amber-500/10 text-amber-400 font-display text-[10px] tracking-widest">{mat.subject}</span>
+                  <span className="text-[11px] text-stone-400">{new Date(mat.createdAt).toLocaleDateString()}</span>
                 </div>
-                <h3 className="text-xl font-bold mt-3 text-white truncate">{mat.title}</h3>
-                <p className="text-slate-400 text-sm mt-2 line-clamp-3 h-12 leading-relaxed">
-                  {mat.description || "No description provided."}
+                <h3 className="text-lg font-black font-display mt-3 text-white truncate" title={mat.title}>{mat.title}</h3>
+                <p className="text-stone-300 text-xs mt-2 line-clamp-3 leading-relaxed">
+                  {mat.description || "No scroll description provided."}
                 </p>
               </div>
-              <div className="mt-6 border-t border-line pt-4 flex items-center justify-between gap-3">
+              <div className="mt-6 border-t border-amber-500/20 pt-4 flex items-center justify-between gap-3">
                 <Link
                   to={`/student/materials/${mat._id}`}
-                  className="btn-outline flex items-center gap-2 !py-2 !px-4 text-sm"
+                  className="btn-outline flex items-center gap-1.5 !py-2 !px-3.5 text-xs font-display uppercase tracking-wider"
                 >
-                  <Eye size={16} /> View
+                  <Eye size={14} /> Read Scroll
                 </Link>
                 <button
                   onClick={() => downloadFile(mat._id, mat.fileName)}
-                  className="btn-primary flex items-center gap-2 !py-2 !px-4 text-sm"
+                  className="btn-primary flex items-center gap-1.5 !py-2 !px-3.5 text-xs font-display uppercase tracking-wider"
                 >
-                  <Download size={16} /> Download
+                  <Download size={14} /> Download
                 </button>
               </div>
             </div>

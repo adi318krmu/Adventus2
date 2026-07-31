@@ -64,15 +64,15 @@ const CompanionAvatar = () => {
         {showMenu && (
           <div
             ref={menuRef}
-            className="absolute bottom-20 left-1/2 -translate-x-1/2 w-48 rounded-2xl border border-mint/40 bg-ink/95 p-3 shadow-2xl backdrop-blur-md animate-fade-in z-50 text-white"
+            className="absolute bottom-20 left-1/2 -translate-x-1/2 w-52 rounded-2xl border-2 border-amber-500/60 bg-slate-950/95 p-3.5 shadow-samuraiGold backdrop-blur-md animate-fade-in z-50 text-white"
           >
-            <div className="flex items-center justify-between border-b border-line pb-2 mb-2">
-              <span className="text-xs font-bold text-mint flex items-center gap-1">
-                <Sparkles size={12} /> {avatarObj.name}
+            <div className="flex items-center justify-between border-b border-amber-500/30 pb-2 mb-2">
+              <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5 font-display">
+                <Sparkles size={13} className="text-amber-400" /> {avatarObj.name} Companion
               </span>
               <button
                 onClick={() => setShowMenu(false)}
-                className="text-slate-400 hover:text-white p-0.5 rounded-full"
+                className="text-stone-400 hover:text-white p-0.5 rounded-full"
               >
                 <X size={14} />
               </button>
@@ -84,7 +84,7 @@ const CompanionAvatar = () => {
                   setShowMenu(false);
                   navigate("/profile");
                 }}
-                className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-mint/15 hover:text-mint transition"
+                className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-stone-200 hover:bg-amber-500/20 hover:text-amber-300 transition"
               >
                 <User size={14} /> My Profile
               </button>
@@ -94,14 +94,14 @@ const CompanionAvatar = () => {
                   setShowMenu(false);
                   navigate("/profile");
                 }}
-                className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-mint/15 hover:text-mint transition"
+                className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-stone-200 hover:bg-amber-500/20 hover:text-amber-300 transition"
               >
                 <Sparkles size={14} /> Change Avatar
               </button>
 
               <button
                 onClick={handleHideCompanion}
-                className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/15 transition"
+                className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-900/30 transition"
               >
                 <EyeOff size={14} /> Hide Companion
               </button>
@@ -114,12 +114,12 @@ const CompanionAvatar = () => {
           onClick={() => setShowMenu((prev) => !prev)}
           className={`relative cursor-pointer group transition-transform duration-300 hover:scale-110 ${actionClass}`}
         >
-          {/* Subtle Glow Aura on Hover */}
-          <div className="absolute inset-0 rounded-full bg-mint/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+          {/* Subtle Gold Glow Aura on Hover */}
+          <div className="absolute inset-0 rounded-full bg-amber-500/25 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
 
           {/* Avatar Container */}
           <div
-            className="relative h-12 w-12 sm:h-16 sm:w-16 rounded-full border border-mint/40 bg-ink/80 p-1 shadow-glow backdrop-blur-sm flex items-center justify-center"
+            className="relative h-12 w-12 sm:h-16 sm:w-16 rounded-full border-2 border-amber-500/60 bg-stone-900/90 p-1 shadow-samuraiGold backdrop-blur-sm flex items-center justify-center"
             style={{
               transform: `scaleX(${direction})`
             }}
@@ -132,7 +132,7 @@ const CompanionAvatar = () => {
           </div>
 
           {/* Walking Indicator Shadow */}
-          <div className="mx-auto mt-0.5 h-1.5 w-8 rounded-full bg-black/40 blur-[1px]" />
+          <div className="mx-auto mt-0.5 h-1.5 w-8 rounded-full bg-black/50 blur-[1px]" />
         </div>
       </div>
     </div>

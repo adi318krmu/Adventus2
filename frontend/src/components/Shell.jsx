@@ -1,8 +1,9 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { LogOut, LayoutDashboard, BookOpen, KeyRound, CreditCard, User } from "lucide-react";
+import { LogOut, LayoutDashboard, BookOpen, KeyRound, CreditCard, User, Scroll } from "lucide-react";
 import Brand from "./Brand";
 import UserAvatar from "./UserAvatar";
 import CompanionAvatar from "./CompanionAvatar";
+import SakuraPetals from "./SakuraPetals";
 import { useAuth } from "../context/AuthContext";
 import ThemeToggle from "./ThemeToggle";
 
@@ -11,7 +12,7 @@ const getNavLinkIcon = (label) => {
     case "Dashboard":
       return <LayoutDashboard size={16} />;
     case "Study Materials":
-      return <BookOpen size={16} />;
+      return <Scroll size={16} />;
     case "Password Requests":
     case "Change Password":
       return <KeyRound size={16} />;
@@ -47,30 +48,63 @@ const Shell = ({ children, type = "student" }) => {
         ];
 
   return (
-    <div className="min-h-screen bg-ink text-white">
-      <header className="border-b border-line bg-ink/95 px-5 py-5">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 md:flex-row md:items-center md:justify-between">
-          <Link to={type === "admin" ? "/admin/dashboard" : "/student/dashboard"}><Brand size="small" /></Link>
-          <div className="flex flex-wrap items-center gap-3">
+    <div className="relative min-h-screen bg-ink text-white shoji-pattern transition-colors duration-300">
+      <SakuraPetals />
+      
+      {/* Top Header / Dojo Navigation Bar */}
+      <header className="sticky top-0 z-30 border-b border-amber-500/30 bg-ink/90 px-5 py-4 backdrop-blur-md transition-colors duration-300 shadow-md">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <Link to={type === "admin" ? "/admin/dashboard" : "/student/dashboard"}>
+            <Brand size="small" />
+          </Link>
+
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {links.map(([to, label]) => (
-              <NavLink key={to} to={to} className={({ isActive }) => `rounded-xl px-4 py-2 text-sm font-semibold flex items-center gap-2 transition-all duration-200 ${isActive ? "bg-mint text-ink" : "border border-line text-slate-300 hover:text-mint hover:bg-mint/10"}`}>
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  `rounded-xl px-3.5 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all duration-200 border ${
+                    isActive
+                      ? "bg-gradient-to-r from-amber-600 to-amber-500 text-stone-950 border-amber-400 shadow-samuraiGold"
+                      : "border-amber-500/30 text-amber-100/80 hover:text-amber-300 hover:border-amber-500/60 hover:bg-amber-500/10"
+                  }`
+                }
+              >
                 {getNavLinkIcon(label)}
-                {label}
+                <span>{label}</span>
               </NavLink>
             ))}
+
             <ThemeToggle />
+
             {user && (
-              <Link to={type === "admin" ? "/admin/dashboard" : "/profile"} title={user?.name || user?.username || "Profile"} className="flex items-center gap-2 rounded-full p-0.5 hover:ring-2 hover:ring-mint/50 transition">
-                <UserAvatar user={user} className="h-9 w-9 text-xs" />
+              <Link
+                to={type === "admin" ? "/admin/dashboard" : "/profile"}
+                title={user?.name || user?.username || "Profile"}
+                className="flex items-center gap-2 rounded-full p-0.5 border border-amber-500/40 hover:border-amber-400 hover:scale-105 transition"
+              >
+                <UserAvatar user={user} className="h-8 w-8 text-xs" />
               </Link>
             )}
-            <button className="btn-outline flex items-center gap-2 !px-3" onClick={() => { logout(); navigate("/"); }}>
-              <LogOut size={18} /> Logout
+
+            <button
+              className="rounded-xl border border-red-700/60 bg-red-950/40 px-3 py-2 text-xs font-bold text-red-300 transition-all hover:bg-red-900/60 hover:text-white flex items-center gap-1.5"
+              onClick={() => {
+                logout();
+                navigate("/");
+              }}
+            >
+              <LogOut size={15} /> Logout
             </button>
           </div>
         </div>
       </header>
-      <main className="brand-scroll mx-auto max-w-7xl px-5 py-8">{children}</main>
+
+      {/* Main Content Area */}
+      <main className="relative z-10 brand-scroll mx-auto max-w-7xl px-4 sm:px-6 py-8">{children}</main>
+
+      {/* Avatar Companion */}
       {type === "student" && user && <CompanionAvatar />}
     </div>
   );

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Check, X, ShieldAlert, Key, CheckCircle } from "lucide-react";
+import { Check, X, ShieldAlert, Key, CheckCircle, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
 import Shell from "../../components/Shell";
+import JapaneseDivider from "../../components/JapaneseDivider";
 import api from "../../utils/api";
 
 const PasswordRequests = () => {
@@ -68,72 +69,76 @@ const PasswordRequests = () => {
 
   return (
     <Shell type="admin">
-      <div>
-        <p className="text-mint">Admin Console</p>
-        <h1 className="text-4xl font-bold">Password Reset Requests</h1>
-        <p className="mt-1 text-slate-400">View and resolve student password recovery and login requests.</p>
+      <div className="border-b border-amber-500/30 pb-5">
+        <p className="text-xs font-bold uppercase tracking-widest text-amber-400 font-display flex items-center gap-1.5">
+          <ShieldCheck size={14} /> Security Chamber
+        </p>
+        <h1 className="mt-1 text-3xl font-black font-display text-white">Password Recovery Petitions</h1>
+        <p className="mt-1 text-xs text-stone-300">Authorize or dismiss student login key recovery petitions.</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 mt-6">
-        <section className="card lg:col-span-2">
+        <section className="card lg:col-span-2 border-amber-500/30 p-6 shadow-samuraiGold">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-mint">Pending Requests</h2>
-            <span className="badge border-mint bg-mint/10 text-mint font-semibold">
+            <h2 className="text-xl font-black font-display text-white">Pending Petitions</h2>
+            <span className="badge border-amber-500/40 bg-amber-500/10 text-amber-400 font-display text-xs tracking-wider">
               {pending.length} Pending
             </span>
           </div>
 
-          <div className="mt-5 overflow-x-auto">
-            <table className="w-full min-w-[650px] text-left">
-              <thead className="text-sm text-slate-400">
+          <JapaneseDivider className="my-5" />
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[650px] text-left text-xs">
+              <thead className="font-display uppercase tracking-wider text-amber-400/90 border-b border-amber-500/30">
                 <tr>
-                  <th className="py-3">Student details</th>
-                  <th>Requested At</th>
-                  <th>Status</th>
-                  <th>Action</th>
+                  <th className="py-3 px-4">Student Details</th>
+                  <th className="px-4">Petition Date</th>
+                  <th className="px-4">Status</th>
+                  <th className="px-4">Grandmaster Action</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={4} className="py-4 text-slate-400">
-                      Loading...
+                    <td colSpan={4} className="py-6 text-center text-stone-400">
+                      Loading petitions...
                     </td>
                   </tr>
                 ) : pending.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="py-5 text-slate-400">
-                      No pending requests found.
+                    <td colSpan={4} className="py-6 text-center text-stone-400">
+                      No pending password reset petitions.
                     </td>
                   </tr>
                 ) : (
                   pending.map((req) => (
-                    <tr key={req._id} className="border-t border-line">
-                      <td className="py-4">
-                        <p className="font-semibold text-white">{req.name}</p>
-                        <p className="text-xs text-slate-400">
+                    <tr key={req._id} className="border-t border-amber-500/10 hover:bg-amber-500/5 transition">
+                      <td className="py-3.5 px-4">
+                        <p className="font-bold text-white text-xs">{req.name}</p>
+                        <p className="text-[11px] text-stone-400 font-mono">
                           {req.email} | {req.phone}
                         </p>
                       </td>
-                      <td>{new Date(req.requestedAt).toLocaleString()}</td>
-                      <td>
-                        <span className="badge border-amber-500 bg-amber-500/10 text-amber-500">
+                      <td className="px-4 text-stone-300">{new Date(req.requestedAt).toLocaleString()}</td>
+                      <td className="px-4">
+                        <span className="badge border-amber-500/40 bg-amber-500/10 text-amber-400 font-display text-[10px] tracking-widest">
                           Pending
                         </span>
                       </td>
-                      <td>
+                      <td className="px-4">
                         <div className="flex gap-2">
                           <button
                             onClick={() => openApproveModal(req)}
-                            className="btn-outline !py-2 !px-3 hover:!border-mint hover:!bg-mint/10 hover:!text-mint"
-                            title="Approve"
+                            className="btn-primary !p-2 text-xs"
+                            title="Approve Petition"
                           >
                             <Check size={16} />
                           </button>
                           <button
                             onClick={() => handleReject(req._id)}
-                            className="btn-outline !py-2 !px-3 hover:!border-rose-500 hover:!bg-rose-500/10 hover:!text-rose-500"
-                            title="Reject"
+                            className="rounded-xl border border-red-700/60 bg-red-950/40 p-2 text-red-300 hover:bg-red-900/60"
+                            title="Reject Petition"
                           >
                             <X size={16} />
                           </button>
@@ -147,31 +152,32 @@ const PasswordRequests = () => {
           </div>
         </section>
 
-        <aside className="card h-fit">
-          <h2 className="text-xl font-bold text-mint mb-5">History</h2>
-          <div className="space-y-4 max-h-[400px] overflow-y-auto">
+        <aside className="card border-amber-500/30 p-6 shadow-samurai h-fit">
+          <h2 className="text-lg font-black font-display text-white">Resolved History</h2>
+          <JapaneseDivider className="my-4" />
+          <div className="space-y-3.5 max-h-[400px] overflow-y-auto pr-1">
             {resolved.map((req) => (
-              <div key={req._id} className="border-t border-line py-3">
-                <p className="font-semibold text-white">{req.name}</p>
-                <p className="text-xs text-slate-400">{req.email}</p>
+              <div key={req._id} className="border-b border-amber-500/20 pb-3">
+                <p className="font-bold text-white text-xs">{req.name}</p>
+                <p className="text-[11px] text-stone-400 font-mono">{req.email}</p>
                 <div className="flex items-center gap-2 mt-2">
                   <span
                     className={`badge ${
                       req.status === "Approved"
-                        ? "border-mint bg-mint/10 text-mint"
-                        : "border-rose-500 bg-rose-500/10 text-rose-500"
-                    }`}
+                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+                        : "border-red-500/40 bg-red-500/10 text-red-400"
+                    } font-display text-[10px] tracking-widest`}
                   >
                     {req.status}
                   </span>
-                  <span className="text-xs text-slate-500 ml-auto">
+                  <span className="text-[10px] text-stone-500 ml-auto font-mono">
                     {new Date(req.resolvedAt || req.requestedAt).toLocaleDateString()}
                   </span>
                 </div>
               </div>
             ))}
             {!loading && resolved.length === 0 && (
-              <p className="text-sm text-slate-500">No resolved requests yet.</p>
+              <p className="text-xs text-stone-400 py-4 text-center">No resolved petitions yet.</p>
             )}
           </div>
         </aside>
@@ -179,43 +185,43 @@ const PasswordRequests = () => {
 
       {/* Approve Request Modal */}
       {selectedRequest && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm grid place-items-center p-5">
-          <div className="card w-full max-w-lg">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md grid place-items-center p-5">
+          <div className="card w-full max-w-lg border-amber-500/50 p-8 shadow-samuraiGold">
             {!approvedPassword ? (
               <form onSubmit={handleApprove}>
-                <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-                  <ShieldAlert className="text-mint" /> Approve Password Reset
+                <h3 className="text-xl font-black font-display text-white flex items-center gap-2">
+                  <ShieldAlert className="text-amber-400" size={20} /> Grant Password Reset Hanko
                 </h3>
-                <p className="text-sm text-slate-400 mt-2">
-                  Approving password reset request for <strong>{selectedRequest.name}</strong>.
+                <p className="text-xs text-stone-300 mt-2">
+                  Approving password reset petition for <strong className="text-amber-400">{selectedRequest.name}</strong>.
                 </p>
 
                 <div className="mt-5 space-y-4">
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">
-                      Temporary Password
+                    <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 font-display mb-1.5">
+                      Temporary Key Password
                     </label>
                     <div className="relative">
-                      <Key className="absolute left-3 top-3.5 text-slate-500" size={18} />
+                      <Key className="absolute left-3 top-3 text-stone-500" size={16} />
                       <input
-                        className="input pl-10"
+                        className="input pl-9 text-xs font-mono"
                         value={tempPassword}
                         onChange={(e) => setTempPassword(e.target.value)}
                         required
                       />
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">
-                      You can use the automatically generated password above or enter a custom one.
+                    <p className="text-[11px] text-stone-400 mt-1.5">
+                      You can use the generated temporary key above or enter a custom one.
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-6 flex gap-3">
-                  <button className="btn-primary flex-1">Approve Request</button>
+                  <button className="btn-primary flex-1 font-display uppercase tracking-wider text-xs py-3">Approve Key</button>
                   <button
                     type="button"
                     onClick={() => setSelectedRequest(null)}
-                    className="btn-outline flex-1"
+                    className="btn-outline flex-1 font-display uppercase tracking-wider text-xs py-3"
                   >
                     Cancel
                   </button>
@@ -223,25 +229,25 @@ const PasswordRequests = () => {
               </form>
             ) : (
               <div className="text-center py-4">
-                <CheckCircle className="text-mint mx-auto mb-4" size={48} />
-                <h3 className="text-2xl font-bold text-white">Reset Approved Successfully!</h3>
-                <p className="text-slate-400 text-sm mt-2">
-                  The password for <strong>{selectedRequest.name}</strong> has been updated.
+                <CheckCircle className="text-amber-400 mx-auto mb-4" size={48} />
+                <h3 className="text-xl font-black font-display text-white">Reset Approved & Sealed!</h3>
+                <p className="text-stone-300 text-xs mt-2">
+                  The password key for <strong className="text-amber-400">{selectedRequest.name}</strong> has been updated.
                 </p>
 
-                <div className="mt-6 bg-panelSoft border border-line rounded-xl p-4">
-                  <p className="text-xs text-slate-500 uppercase tracking-wider font-bold">Temporary Password</p>
-                  <p className="text-2xl font-mono text-mint mt-2 tracking-wide select-all font-bold">{approvedPassword}</p>
+                <div className="mt-6 bg-stone-950 border border-amber-500/40 rounded-xl p-4 shadow-inner">
+                  <p className="text-[10px] text-stone-400 font-display uppercase tracking-widest font-bold">Temporary Password Key</p>
+                  <p className="text-2xl font-mono text-amber-400 mt-1 tracking-wider select-all font-bold">{approvedPassword}</p>
                 </div>
-                <p className="text-xs text-amber-500 mt-3 font-semibold">
-                  * Copy this temporary password and share it with the student. They will be forced to change it upon their next login.
+                <p className="text-xs text-amber-300 mt-3 font-semibold">
+                  * Provide this temporary password key to the apprentice student. They will update it on next login.
                 </p>
 
                 <button
                   onClick={() => setSelectedRequest(null)}
-                  className="btn-primary mt-6 w-full"
+                  className="btn-primary mt-6 w-full font-display uppercase tracking-wider text-xs py-3"
                 >
-                  Done
+                  Close & Return
                 </button>
               </div>
             )}

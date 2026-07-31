@@ -1,21 +1,20 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { CreditCard, History, UserRound, BookOpen, X, Mail, ShieldAlert, FileText, FileImage, File } from "lucide-react";
+import { CreditCard, History, UserRound, BookOpen, Mail, Phone, FileText, FileImage, File, Scroll, Award, Download } from "lucide-react";
 import toast from "react-hot-toast";
 import Shell from "../components/Shell";
 import StatusBadge from "../components/StatusBadge";
 import UserAvatar from "../components/UserAvatar";
+import JapaneseDivider from "../components/JapaneseDivider";
 import { useAuth } from "../context/AuthContext";
-import api, { fileUrl } from "../utils/api";
+import api from "../utils/api";
 import { formatMoney } from "../utils/fees";
 
 const StudentDashboard = () => {
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
   const [history, setHistory] = useState([]);
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // No verification state needed for student dashboard
 
   useEffect(() => {
     Promise.all([
@@ -41,7 +40,7 @@ const StudentDashboard = () => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      toast.success("File Download Started");
+      toast.success("Scroll File Download Started");
     } catch (error) {
       if (error?.response?.data instanceof Blob) {
         try {
@@ -64,125 +63,156 @@ const StudentDashboard = () => {
 
   return (
     <Shell>
-
-
       <div className="grid gap-6 lg:grid-cols-3">
-        <section className="card lg:col-span-2 !p-6 flex flex-col justify-between">
-          <div className="welcome-banner p-6 rounded-2xl border border-line relative overflow-hidden mb-6">
-            <div className="absolute inset-0 opacity-20 pointer-events-none welcome-bg"></div>
+        {/* Main Dashboard Panel */}
+        <section className="card lg:col-span-2 !p-6 flex flex-col justify-between border-amber-500/30">
+          {/* Welcome Dojo Scroll Banner */}
+          <div className="welcome-banner p-6 rounded-2xl border border-amber-500/40 relative overflow-hidden mb-6">
             <div className="relative z-10">
-              <p className="text-xs font-bold uppercase tracking-wider text-mint">Student Dashboard</p>
-              <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <UserAvatar user={user} className="h-16 w-16 text-2xl shadow-glow" />
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-bold uppercase tracking-widest text-amber-400 font-display flex items-center gap-1.5">
+                  <Award size={14} /> Student Dojo Dashboard
+                </p>
+                <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-300 font-display">
+                  Class {user?.class} Apprentice
+                </span>
+              </div>
+
+              <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div className="p-1 rounded-2xl border-2 border-amber-500/60 bg-stone-900 shadow-samuraiGold">
+                  <UserAvatar user={user} className="h-16 w-16 text-2xl" />
+                </div>
                 <div>
-                  <h1 className="text-3xl font-black text-white flex items-center gap-2">Welcome, {user?.name} <span className="animate-bounce">👋</span></h1>
-                  <p className="mt-1 text-sm text-slate-400">Tuition ID: <span className="font-semibold text-mint">{user?.tuitionId || "Generated after profile save"}</span></p>
+                  <h1 className="text-2xl sm:text-3xl font-black font-display text-white flex items-center gap-2">
+                    Greetings, {user?.name} <span className="animate-pulse">🌸</span>
+                  </h1>
+                  <p className="mt-1 text-xs text-stone-300">
+                    Tuition ID: <span className="font-bold text-amber-400 font-mono">{user?.tuitionId || "Pending Generation"}</span>
+                  </p>
                 </div>
               </div>
-              <p className="mt-4 text-sm text-slate-300">Class {user?.class} monthly fee is ready for this billing cycle.</p>
+              <p className="mt-4 text-xs leading-5 text-stone-300">
+                Your academic journey for Class {user?.class} is active. Maintain diligence in your studies and keep fees up to date.
+              </p>
             </div>
           </div>
           
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
-              <div className="icon-wrapper icon-mint mb-3">
-                <UserRound size={20} />
+          {/* Quick Metrics Grid */}
+          <div className="grid gap-3.5 sm:grid-cols-2 md:grid-cols-4">
+            <div className="rounded-xl border border-amber-500/20 bg-stone-900/60 p-4 shadow-sm hover:border-amber-500/50 transition-all">
+              <div className="icon-wrapper mb-2">
+                <UserRound size={18} />
               </div>
-              <p className="text-sm text-slate-400">Student Name</p>
-              <p className="text-lg font-bold truncate text-white">{user?.name}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400 font-display">Student</p>
+              <p className="text-base font-bold truncate text-white">{user?.name}</p>
             </div>
-            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
-              <div className="icon-wrapper icon-lavender mb-3">
-                <BookOpen size={20} />
+
+            <div className="rounded-xl border border-amber-500/20 bg-stone-900/60 p-4 shadow-sm hover:border-amber-500/50 transition-all">
+              <div className="icon-wrapper mb-2">
+                <BookOpen size={18} />
               </div>
-              <p className="text-sm text-slate-400">Class</p>
-              <p className="text-lg font-bold text-white">Class {user?.class}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400 font-display">Class Rank</p>
+              <p className="text-base font-bold text-white font-display">Class {user?.class}</p>
             </div>
-            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
-              <div className="icon-wrapper icon-yellow mb-3">
-                <History size={20} />
+
+            <div className="rounded-xl border border-amber-500/20 bg-stone-900/60 p-4 shadow-sm hover:border-amber-500/50 transition-all">
+              <div className="icon-wrapper mb-2">
+                <History size={18} />
               </div>
-              <p className="text-sm text-slate-400">Fee Status</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400 font-display">Fee Status</p>
               <div className="mt-1"><StatusBadge status={user?.feeStatus} /></div>
             </div>
-            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
-              <div className="icon-wrapper icon-coral mb-3">
-                <CreditCard size={20} />
+
+            <div className="rounded-xl border border-amber-500/20 bg-stone-900/60 p-4 shadow-sm hover:border-amber-500/50 transition-all">
+              <div className="icon-wrapper mb-2">
+                <CreditCard size={18} />
               </div>
-              <p className="text-sm text-slate-400">Pending Fees</p>
-              <p className="text-lg font-bold text-white">{formatMoney(user?.feeStatus === "Paid" ? 0 : user?.feeAmount)}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400 font-display">Due Balance</p>
+              <p className="text-base font-bold text-amber-400 font-display">{formatMoney(user?.feeStatus === "Paid" ? 0 : user?.feeAmount)}</p>
             </div>
-            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
-              <div className="icon-wrapper icon-blue mb-3">
-                <CreditCard size={20} />
+
+            <div className="rounded-xl border border-amber-500/20 bg-stone-900/60 p-4 shadow-sm hover:border-amber-500/50 transition-all">
+              <div className="icon-wrapper mb-2">
+                <CreditCard size={18} />
               </div>
-              <p className="text-sm text-slate-400">Last Payment</p>
-              <p className="text-lg font-bold truncate text-white">{lastPayment}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400 font-display">Last Payment</p>
+              <p className="text-sm font-bold truncate text-white">{lastPayment}</p>
             </div>
-             <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
-              <div className="icon-wrapper icon-green mb-3">
-                <BookOpen size={20} />
+
+            <div className="rounded-xl border border-amber-500/20 bg-stone-900/60 p-4 shadow-sm hover:border-amber-500/50 transition-all">
+              <div className="icon-wrapper mb-2">
+                <Scroll size={18} />
               </div>
-              <p className="text-sm text-slate-400">Study Materials</p>
-              <p className="text-lg font-bold text-white">{numMaterials}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400 font-display">Study Scrolls</p>
+              <p className="text-base font-bold text-white font-display">{numMaterials}</p>
             </div>
-            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
-              <div className="icon-wrapper icon-purple mb-3">
-                <Mail size={20} />
+
+            <div className="rounded-xl border border-amber-500/20 bg-stone-900/60 p-4 shadow-sm hover:border-amber-500/50 transition-all">
+              <div className="icon-wrapper mb-2">
+                <Mail size={18} />
               </div>
-              <p className="text-sm text-slate-400">Email Address</p>
-              <p className="text-lg font-bold truncate text-white" title={user?.email}>{user?.email || "No Email"}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400 font-display">Email</p>
+              <p className="text-xs font-bold truncate text-stone-200" title={user?.email}>{user?.email || "N/A"}</p>
             </div>
-            <div className="rounded-xl border border-line p-5 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
-              <div className="icon-wrapper icon-cyan mb-3">
-                <UserRound size={20} />
+
+            <div className="rounded-xl border border-amber-500/20 bg-stone-900/60 p-4 shadow-sm hover:border-amber-500/50 transition-all">
+              <div className="icon-wrapper mb-2">
+                <Phone size={18} />
               </div>
-              <p className="text-sm text-slate-400">Phone Number</p>
-              <p className="text-lg font-bold truncate text-white" title={user?.phone}>{user?.phone || "No Phone"}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400 font-display">Phone</p>
+              <p className="text-xs font-bold truncate text-stone-200" title={user?.phone}>{user?.phone || "N/A"}</p>
             </div>
           </div>
+
           <div className="mt-6 flex justify-start">
-            <Link to="/payment" className="btn-primary inline-flex items-center justify-center gap-2 shadow-md hover:translate-y-[-1px] active:translate-y-[0px] !px-6 !py-3">
-              <CreditCard size={18} /> Submit Payment
+            <Link to="/payment" className="btn-primary font-display uppercase tracking-wider text-xs inline-flex items-center justify-center gap-2 !px-6 !py-3">
+              <CreditCard size={17} /> Submit Fee Payment
             </Link>
           </div>
         </section>
 
-        <aside className="card !p-6 flex flex-col justify-between">
+        {/* Study Scrolls Preview Panel */}
+        <aside className="card !p-6 flex flex-col justify-between border-amber-500/30">
           <div>
-            <h2 className="text-xl font-bold text-mint">Recent Study Materials</h2>
-            <div className="mt-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-amber-500/30 pb-3">
+              <h2 className="text-lg font-black font-display text-white flex items-center gap-2">
+                <Scroll size={18} className="text-amber-400" /> Recent Study Scrolls
+              </h2>
+              <span className="text-xs font-bold text-amber-400 font-display">{materials.length} total</span>
+            </div>
+
+            <div className="mt-4 space-y-3">
               {loading ? (
-                <p className="text-slate-400 text-sm">Loading...</p>
+                <p className="text-stone-400 text-xs py-4 text-center">Reading scroll archive...</p>
               ) : recentMaterials.length === 0 ? (
-                <p className="text-slate-400 text-sm">No study materials uploaded yet.</p>
+                <p className="text-stone-400 text-xs py-4 text-center">No study materials uploaded yet.</p>
               ) : (
                 recentMaterials.map((mat) => {
                   const isPdf = mat.fileName?.toLowerCase().endsWith(".pdf") || mat.fileType?.toLowerCase().includes("pdf");
                   const isImage = mat.fileType?.toLowerCase().includes("image");
                   return (
-                    <div key={mat._id} className="rounded-xl border border-line bg-panelSoft/10 p-4 shadow-sm hover:translate-y-[-1px] transition-all duration-200">
+                    <div key={mat._id} className="rounded-xl border border-amber-500/20 bg-stone-900/70 p-3.5 shadow-sm hover:border-amber-500/50 transition-all">
                       <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 mt-0.5">
                           {isPdf ? (
-                            <FileText className="text-red-500" size={20} />
+                            <FileText className="text-red-400" size={18} />
                           ) : isImage ? (
-                            <FileImage className="text-mint" size={20} />
+                            <FileImage className="text-amber-400" size={18} />
                           ) : (
-                            <File className="text-slate-400" size={20} />
+                            <File className="text-stone-400" size={18} />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-bold text-white truncate text-sm" title={mat.title}>{mat.title}</p>
-                          <p className="text-xs text-slate-400 mt-1">{mat.subject} • {new Date(mat.createdAt).toLocaleDateString()}</p>
+                          <p className="font-bold text-white truncate text-xs" title={mat.title}>{mat.title}</p>
+                          <p className="text-[11px] text-stone-400 mt-0.5">{mat.subject} • {new Date(mat.createdAt).toLocaleDateString()}</p>
                         </div>
                       </div>
-                      <div className="mt-4 pt-3 border-t border-line/30 flex justify-between items-center">
-                        <Link to={`/student/materials/${mat._id}`} className="text-xs font-semibold text-mint hover:underline">
-                          View
+                      <div className="mt-3 pt-2.5 border-t border-amber-500/20 flex justify-between items-center">
+                        <Link to={`/student/materials/${mat._id}`} className="text-xs font-bold font-display uppercase tracking-wider text-amber-400 hover:underline">
+                          Read Scroll &rarr;
                         </Link>
-                        <button onClick={() => downloadFile(mat._id, mat.fileName)} className="text-xs font-semibold text-mint hover:underline flex items-center gap-1">
-                          Download &darr;
+                        <button onClick={() => downloadFile(mat._id, mat.fileName)} className="text-xs font-bold text-stone-300 hover:text-amber-300 flex items-center gap-1">
+                          <Download size={13} /> Save
                         </button>
                       </div>
                     </div>
@@ -191,28 +221,56 @@ const StudentDashboard = () => {
               )}
             </div>
           </div>
+
           {!loading && materials.length > 0 && (
-            <Link to="/student/materials" className="btn-outline mt-6 block text-center text-xs">View All Materials</Link>
+            <Link to="/student/materials" className="btn-outline mt-6 block text-center text-xs font-display uppercase tracking-wider py-2.5">
+              View All Academy Scrolls
+            </Link>
           )}
         </aside>
       </div>
 
-      <section className="card mt-6">
-        <h2 className="text-2xl font-bold">Payment History</h2>
-        <div className="mt-5 overflow-x-auto">
-          <table className="w-full min-w-[700px] text-left">
-            <thead className="text-sm text-slate-400"><tr><th className="py-3">Month</th><th>Amount</th><th>Mode</th><th>Transaction</th><th>Status</th></tr></thead>
+      {/* Payment History Table */}
+      <section className="card mt-6 border-amber-500/30">
+        <div className="flex items-center justify-between border-b border-amber-500/30 pb-4">
+          <h2 className="text-xl font-black font-display text-white flex items-center gap-2">
+            <History size={20} className="text-amber-400" /> Fee Payment Ledger
+          </h2>
+          <span className="text-xs text-stone-400 font-display uppercase tracking-wider">Hanko Certified Records</span>
+        </div>
+
+        <JapaneseDivider className="my-4" />
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[700px] text-left text-xs">
+            <thead className="font-display uppercase tracking-wider text-amber-400/90 border-b border-amber-500/30">
+              <tr>
+                <th className="py-3 px-4">Billing Month</th>
+                <th className="px-4">Amount</th>
+                <th className="px-4">Payment Method</th>
+                <th className="px-4">Transaction Reference</th>
+                <th className="px-4">Hanko Status</th>
+              </tr>
+            </thead>
             <tbody>
-              {loading ? <tr><td className="py-4 text-slate-400">Loading...</td></tr> : history.map((payment) => (
-                <tr key={payment._id} className="border-t border-line"><td className="py-4">{payment.month}</td><td>{formatMoney(payment.amount)}</td><td>{payment.paymentMode}</td><td>{payment.transactionId}</td><td><StatusBadge status={payment.status} /></td></tr>
+              {loading ? (
+                <tr><td colSpan={5} className="py-6 text-center text-stone-400">Loading ledger records...</td></tr>
+              ) : history.map((payment) => (
+                <tr key={payment._id} className="border-t border-amber-500/10 hover:bg-amber-500/5 transition">
+                  <td className="py-3.5 px-4 font-bold text-white">{payment.month}</td>
+                  <td className="px-4 font-bold text-amber-400 font-display">{formatMoney(payment.amount)}</td>
+                  <td className="px-4 text-stone-300">{payment.paymentMode}</td>
+                  <td className="px-4 font-mono text-stone-400">{payment.transactionId}</td>
+                  <td className="px-4"><StatusBadge status={payment.status} /></td>
+                </tr>
               ))}
-              {!loading && history.length === 0 && <tr><td className="py-4 text-slate-400">No payment records yet.</td></tr>}
+              {!loading && history.length === 0 && (
+                <tr><td colSpan={5} className="py-6 text-center text-stone-400">No payment records found in ledger.</td></tr>
+              )}
             </tbody>
           </table>
         </div>
       </section>
-
-
     </Shell>
   );
 };

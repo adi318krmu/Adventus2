@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { KeyRound, Power, PowerOff, Search, Trash2 } from "lucide-react";
+import { KeyRound, Power, PowerOff, Search, Trash2, Users } from "lucide-react";
 import Shell from "../components/Shell";
 import StatusBadge from "../components/StatusBadge";
+import JapaneseDivider from "../components/JapaneseDivider";
 import api from "../utils/api";
 
 const accountLabel = (student) => {
@@ -58,54 +59,59 @@ const StudentAccountManagement = () => {
 
   return (
     <Shell type="admin">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-amber-500/30 pb-5">
         <div>
-          <p className="text-mint">Admin Controls</p>
-          <h1 className="mt-2 text-4xl font-bold">Student Account Management</h1>
+          <p className="text-xs font-bold uppercase tracking-widest text-amber-400 font-display flex items-center gap-1.5">
+            <Users size={14} /> Apprentice Registry
+          </p>
+          <h1 className="mt-1 text-3xl font-black font-display text-white">Student Account Management</h1>
         </div>
-        <div className="relative w-full md:max-w-sm">
-          <Search className="absolute left-3 top-3.5 text-slate-500" size={18} />
-          <input className="input pl-10" placeholder="Search account" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <div className="flex gap-2 w-full md:w-auto">
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-3 top-3 text-stone-500" size={16} />
+            <input className="input pl-9 !py-2 text-xs" placeholder="Search account by username or name..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          </div>
+          <button className="btn-primary text-xs font-display uppercase tracking-wider !py-2 !px-4" onClick={loadStudents}>Search</button>
         </div>
-        <button className="btn-outline" onClick={loadStudents}>Search</button>
       </div>
 
-      <section className="card mt-6">
+      <section className="card mt-6 border-amber-500/30 p-6 shadow-samuraiGold">
+        <JapaneseDivider className="mb-6" />
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[980px] text-left">
-            <thead className="text-sm text-slate-400">
+          <table className="w-full min-w-[980px] text-left text-xs">
+            <thead className="font-display uppercase tracking-wider text-amber-400/90 border-b border-amber-500/30">
               <tr>
-                <th className="py-3">Username</th>
-                <th>Student Name</th>
-                <th>Class</th>
-                <th>Tuition ID</th>
-                <th>Account Status</th>
-                <th>Admin Actions</th>
+                <th className="py-3 px-4">Username</th>
+                <th className="px-4">Student Name</th>
+                <th className="px-4">Class</th>
+                <th className="px-4">Tuition ID</th>
+                <th className="px-4">Account Status</th>
+                <th className="px-4">Admin Actions</th>
               </tr>
             </thead>
             <tbody>
               {students.map((student) => (
-                <tr key={student._id} className="border-t border-line">
-                  <td className="py-4">@{student.username}</td>
-                  <td className="font-semibold">{student.name}</td>
-                  <td>Class {student.class}</td>
-                  <td>{student.tuitionId}</td>
-                  <td><StatusBadge status={accountLabel(student)} /></td>
-                  <td>
+                <tr key={student._id} className="border-t border-amber-500/10 hover:bg-amber-500/5 transition">
+                  <td className="py-3.5 px-4 font-mono text-stone-300">@{student.username}</td>
+                  <td className="px-4 font-bold text-white">{student.name}</td>
+                  <td className="px-4 font-bold font-display text-amber-400">Class {student.class}</td>
+                  <td className="px-4 font-mono text-stone-400">{student.tuitionId}</td>
+                  <td className="px-4"><StatusBadge status={accountLabel(student)} /></td>
+                  <td className="px-4">
                     <div className="flex flex-wrap gap-2">
-                      <button className="btn-outline !px-3" onClick={() => resetPassword(student)} title="Reset password"><KeyRound size={17} /></button>
+                      <button className="btn-outline !py-1.5 !px-3 text-xs flex items-center gap-1" onClick={() => resetPassword(student)} title="Reset Password"><KeyRound size={14} /> Reset Pass</button>
                       {student.accountDisabled ? (
-                        <button className="btn-outline !px-3" onClick={() => setDisabled(student, false)} title="Enable account"><Power size={17} /></button>
+                        <button className="btn-primary !py-1.5 !px-3 text-xs flex items-center gap-1" onClick={() => setDisabled(student, false)} title="Enable Account"><Power size={14} /> Enable</button>
                       ) : (
-                        <button className="btn-outline !px-3" onClick={() => setDisabled(student, true)} title="Disable account"><PowerOff size={17} /></button>
+                        <button className="rounded-xl border border-amber-500/40 bg-amber-950/40 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-900/60 flex items-center gap-1" onClick={() => setDisabled(student, true)} title="Disable Account"><PowerOff size={14} /> Disable</button>
                       )}
-                      <button className="btn-outline !px-3" onClick={() => deleteStudent(student)} title="Delete student"><Trash2 size={17} /></button>
+                      <button className="rounded-xl border border-red-700/60 bg-red-950/40 px-3 py-1.5 text-xs font-bold text-red-300 hover:bg-red-900/60" onClick={() => deleteStudent(student)} title="Delete Student"><Trash2 size={14} /></button>
                     </div>
                   </td>
                 </tr>
               ))}
-              {loading && <tr><td className="py-5 text-slate-400">Loading accounts...</td></tr>}
-              {!loading && students.length === 0 && <tr><td className="py-5 text-slate-400">No student accounts found.</td></tr>}
+              {loading && <tr><td colSpan={6} className="py-6 text-center text-stone-400">Loading student accounts...</td></tr>}
+              {!loading && students.length === 0 && <tr><td colSpan={6} className="py-6 text-center text-stone-400">No student accounts found.</td></tr>}
             </tbody>
           </table>
         </div>
